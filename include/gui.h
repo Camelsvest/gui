@@ -8,6 +8,9 @@ public:
 	GUI();
 	virtual ~GUI();
 
+    bool    init();
+    int     run();
+
 private:
     MainWindow* m_pMainWindow;
 };

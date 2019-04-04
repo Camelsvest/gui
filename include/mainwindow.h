@@ -9,20 +9,27 @@
 
 class MainWindow {
 public:
-    MainWindow();
-    virtual ~MainWindow();
+    static MainWindow * getInstance();
+    static void releaseInstance();
+    
+    bool        isCreatedWnd();
+    bool        createWnd(int iLeft,int iTop,int iRight,int iBottom);
+	void        destroyWnd();
 
-    bool        Create(int iLeft,int iTop,int iRight,int iBottom)(int iLeft, int iTop, int iRight, int iBottom);
-	void        Destroy();
+    int         run();
 
 protected:
-	static int	WndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam);
+    MainWindow();
+    virtual ~MainWindow();
+    
+	static int	wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam);
 
 	int         onCreate(WPARAM wParam, LPARAM lParam);
 	int         onPaint(WPARAM wParam, LPARAM lParam);
 	
 private:
-    HWND            m_hMainWnd;
+    HWND                m_hMainWnd;
+    static MainWindow   *m_pInstance;
 };
 
 #endif
