@@ -10,12 +10,12 @@ INCLUDE := -Iinclude $(MINIGUI_INCLUDE)
 CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
 LDFLAGS := -pthread
-LIBS    := $(MINIGUI_LIB) -lpng -ljpeg
+LIBS    := $(MINIGUI_LIB) -lpng -ljpeg -lts
 
 SOURCE  := $(wildcard src/*.cpp)
 OBJS    := $(patsubst %.cpp, %.o, $(SOURCE))
 
-TARGET := gui
+TARGET := mginit
 
 .PHONY : all objs clean rebuild
 

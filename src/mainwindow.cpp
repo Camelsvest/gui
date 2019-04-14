@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "mainwindow.h"
+#include "debuglog.h"
 
 MainWindow *MainWindow::m_pInstance = NULL;
 
@@ -42,14 +43,14 @@ bool MainWindow::createWnd(int iLeft, int iTop, int iRight, int iBottom)
 {
 	MAINWINCREATE CreateInfo;
 	bool bRet = false;
-	
+	ENTER_FUNCTION;
 	if (m_hMainWnd == HWND_INVALID)
 	{
 		memset(&CreateInfo, 0, sizeof(CreateInfo));
 		
 		CreateInfo.dwStyle = WS_VISIBLE;
 		CreateInfo.dwExStyle = WS_EX_CLIPCHILDREN;
-		CreateInfo.spCaption = NULL;
+		CreateInfo.spCaption = "";
 		CreateInfo.hMenu = 0;
 		CreateInfo.hCursor = ::GetSystemCursor(0);
 		CreateInfo.hIcon = 0;
@@ -61,11 +62,12 @@ bool MainWindow::createWnd(int iLeft, int iTop, int iRight, int iBottom)
 		CreateInfo.iBkColor = COLOR_lightwhite;
 		CreateInfo.dwAddData = 0;
 		CreateInfo.hHosting = HWND_DESKTOP;
-
 		m_hMainWnd = ::CreateMainWindow(&CreateInfo);
 		if (m_hMainWnd != HWND_INVALID)
 			bRet = true;
 	}
+
+	OUT_FUNCTION;
 
 	return bRet;
 	
@@ -75,10 +77,9 @@ void MainWindow::destroyWnd()
 {
 	if (m_hMainWnd != HWND_INVALID)
 	{
+		::DestroyAllControls(m_hMainWnd);
 		::DestroyMainWindow(m_hMainWnd);
 		::PostQuitMessage(m_hMainWnd);
-
-		m_hMainWnd = HWND_INVALID;
 	}
 
 	return;
@@ -91,16 +92,22 @@ int MainWindow::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
 	switch(message)
 	{
 	case MSG_CREATE:
-		pThis->onCreate(wParam, lParam);
+		pThis->onCreate(hWnd, wParam, lParam);
 		break;
 
 	case MSG_NCCREATE:
 		break;
 
+	case MSG_COMMAND:
+		pThis->onCommand (wParam, lParam);
+		break;
 	case MSG_PAINT:
 		pThis->onPaint(wParam, lParam);
 		break;
 
+	case MSG_CLOSE:
+		pThis->destroyWnd();
+		break;
 	default:
 		break;
 	}
@@ -108,8 +115,27 @@ int MainWindow::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
 	return DefaultMainWinProc(hWnd, message, wParam, lParam);
 }
 
-int MainWindow::onCreate(WPARAM wParam, LPARAM lParam)
+int MainWindow::onCommand (WPARAM wParam, LPARAM lParam)
 {
+	
+	return 0;
+}
+
+int MainWindow::onCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	 bool bRet;
+	 LOG_PRINT ("main hwnd: %d\r\n", hWnd);
+	 bRet = TaskWindow::getInstance()->createTaskWindow(hWnd);
+	 if (!bRet){
+		LOG_ERR("create task window failed.\r\n");
+		return -1;
+	 }	
+	
+	 bRet = MainFrame::getInstance()->createMainFrame (hWnd);
+	 if (!bRet){
+		LOG_ERR("create main frame failed.\r\n");
+		return -1;
+	 }
 	return 0;
 }
 
@@ -133,6 +159,20 @@ int MainWindow::run()
 
 		ret = 0;
 	}
-
+	
 	return ret;
+}
+
+void MainWindow::cleanUp(){
+	if (m_hMainWnd != HWND_INVALID)
+		MainWindowThreadCleanup (m_hMainWnd);
+
+	if (TaskWindow::getInstance() != NULL)
+		TaskWindow::getInstance()->cleanUp();
+	
+	if (MainFrame::getInstance() != NULL)
+		MainFrame::getInstance()->cleanUp();
+
+	m_hMainWnd = HWND_INVALID;
+	
 }

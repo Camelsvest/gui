@@ -6,6 +6,8 @@
 #include <minigui/gdi.h>
 #include <minigui/window.h>
 #include <minigui/control.h>
+#include "taskwindow.h"
+#include "mainframe.h"
 
 class MainWindow {
 public:
@@ -15,7 +17,8 @@ public:
     bool        isCreatedWnd();
     bool        createWnd(int iLeft,int iTop,int iRight,int iBottom);
 	void        destroyWnd();
-
+    void        cleanUp();
+    
     int         run();
 
 protected:
@@ -24,7 +27,9 @@ protected:
     
 	static int	wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam);
 
-	int         onCreate(WPARAM wParam, LPARAM lParam);
+	int         onCreate(HWND hWnd,WPARAM wParam, LPARAM lParam);
+    int         onCommand (WPARAM wParam, LPARAM lParam);
+
 	int         onPaint(WPARAM wParam, LPARAM lParam);
 	
 private:

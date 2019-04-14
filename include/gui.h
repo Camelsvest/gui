@@ -10,7 +10,7 @@ public:
 
     bool    init();
     int     run();
-
+    void    uninit();
 private:
     MainWindow* m_pMainWindow;
 };
