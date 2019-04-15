@@ -8,7 +8,7 @@
 
 
 StatusWindow:: StatusWindow():
-			hwnd(HWND_INVALID),
+			m_hStatusWnd(HWND_INVALID),
 			m_pInstance(NULL){
 
 }
