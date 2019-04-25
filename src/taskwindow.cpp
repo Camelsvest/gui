@@ -12,10 +12,6 @@ TaskWindow::TaskWindow(){
 }
 
 TaskWindow::~TaskWindow(){
-	if (m_pInstance){
-		delete m_pInstance;
-		m_pInstance = NULL;
-	}
 }
 
 TaskWindow* TaskWindow::getInstance(){
@@ -24,6 +20,13 @@ TaskWindow* TaskWindow::getInstance(){
 		m_pInstance = new TaskWindow();
 
 	return m_pInstance;
+}
+
+void TaskWindow::releaseInstance(){
+		if (m_pInstance){
+		delete m_pInstance;
+		m_pInstance = NULL;
+	}
 }
 
 int TaskWindow::taskWndControlProc(HWND hWnd,int message,WPARAM wParam,LPARAM lParam ){
@@ -85,9 +88,14 @@ int TaskWindow::onCreate(HWND hWnd,WPARAM wParam, LPARAM lParam){
 
 int TaskWindow::onCommand (WPARAM wParam, LPARAM lParam){ 
 	TaskWindow *pThis = getInstance();
-	switch (wParam){
+	int id = LOWORD(wParam);
+	int code = HIWORD(wParam);
+	switch (id){
 		case IDC_EXIT:
-			pThis->onClose();
+			if (code == BN_CLICKED)
+			{
+				::SendMessage(m_hTaskWnd, MSG_CLOSE, 0, 0L);
+			}
 			break;	
 			
 	}
@@ -107,5 +115,7 @@ void TaskWindow::onClose(){
 
 void TaskWindow::cleanUp(){
 	getInstance()->unregisterTaskWindowControl();
+	
+	
 }
 

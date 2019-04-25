@@ -16,10 +16,14 @@ MainFrame::MainFrame()
 
 MainFrame::~MainFrame()
 {
-	if (m_pInstance){
+
+}
+
+void MainFrame::releaseInstance(){
+		if (m_pInstance){
 		delete m_pInstance;
 		m_pInstance = NULL;
-	}
+	}	
 }
 
 MainFrame* MainFrame::getInstance(){
@@ -33,7 +37,7 @@ int MainFrame::MainFrameCtlControlProc(HWND hWnd,int message,WPARAM wParam,LPARA
 	MainFrame *pThis = getInstance();
 	switch (message){
 		case MSG_CREATE:
-			pThis->onCreate(wParam, lParam);
+			pThis->onCreate(hWnd, wParam, lParam);
 			break;
 		case MSG_PAINT:
 			pThis->onPaint(wParam, lParam);
@@ -42,7 +46,14 @@ int MainFrame::MainFrameCtlControlProc(HWND hWnd,int message,WPARAM wParam,LPARA
 			pThis->onEraseBkgnd(wParam, lParam);
 			return 0;
 			//break;
+		case MSG_LBUTTONDOWN:
+			LOG_PRINT ("MSG_LBUTTONDOWN\r\n");
+			break;
 
+		case MSG_LBUTTONUP:
+			LOG_PRINT ("MSG_LBUTTONUP\r\n");
+			break;
+			
 		default:
 			break;
 			
@@ -52,6 +63,8 @@ int MainFrame::MainFrameCtlControlProc(HWND hWnd,int message,WPARAM wParam,LPARA
 bool MainFrame::createMainFrame(HWND hwnd){
 	bool bRet = true;
 	RECT rc;
+	int i = 0;
+	
 	ENTER_FUNCTION;
 	bRet = registerMainFrameControl();
 	if (!bRet)
@@ -59,6 +72,25 @@ bool MainFrame::createMainFrame(HWND hwnd){
 	
 	GetWindowRect(hwnd, &rc);
 	m_pBmpBkGnd = (BITMAP *)calloc (1, sizeof(BITMAP));
+
+	for (; i < MAINFRAME_BMP_NUM; i++)
+		m_pBmpArray[i] = (BITMAP *)calloc (1, sizeof(BITMAP));
+
+	if (LoadBitmap (HDC_SCREEN, m_pBmpArray[0], MAINFRAME_BTN_BMP_NAME_1)){
+		LOG_PRINT ("Load bit map err.\r\n");
+		return false;
+	}
+
+	if (LoadBitmap (HDC_SCREEN, m_pBmpArray[1], MAINFRAME_BTN_BMP_NAME_2)){
+		LOG_PRINT ("Load bit map err.\r\n");
+		return false;
+	}
+
+	if (LoadBitmap (HDC_SCREEN, m_pBmpArray[2], MAINFRAME_BTN_BMP_NAME_3)){
+		LOG_PRINT ("Load bit map err.\r\n");
+		return false;
+	}
+		
 	if (LoadBitmap (HDC_SCREEN, m_pBmpBkGnd, MAINFRAME_BKGND_PIC)){
 
 		LOG_PRINT ("Load bit map err\r\n");
@@ -97,10 +129,23 @@ void MainFrame::unregisterMainFrameControl(){
 void MainFrame::cleanUp()
 {
 	unregisterMainFrameControl();
+
+	if (m_pBmpBkGnd != NULL)
+	{
+		free (m_pBmpBkGnd);
+		m_pBmpBkGnd = NULL;
+	}
+	
+	
 }
 
 
-int  MainFrame::onCreate(WPARAM wParam, LPARAM lParam){
+int  MainFrame::onCreate(HWND hWnd,WPARAM wParam, LPARAM lParam){
+	
+	
+	CreateWindow(CTRL_BUTTON, "BUTTON1", WS_CHILD | WS_VISIBLE | BS_BITMAP , IDC_CTRL_MAINFRAME_ONE, 190, 190, 120, 120, hWnd, (DWORD)m_pBmpArray[0]);
+	CreateWindow(CTRL_BUTTON, "BUTTON2", WS_CHILD | WS_VISIBLE | BS_BITMAP, IDC_CTRL_MAINFRAME_TOW, 340, 190, 120, 120, hWnd, (DWORD)m_pBmpArray[1]);
+	CreateWindow(CTRL_BUTTON, "BUTTON3", WS_CHILD | WS_VISIBLE | BS_BITMAP, IDC_CTRL_MAINFRAME_THREE, 490, 190, 120, 120, hWnd, (DWORD)m_pBmpArray[2]);
 	return 0;
 }
 int  MainFrame::onCommand (WPARAM wParam, LPARAM lParam){

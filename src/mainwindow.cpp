@@ -117,7 +117,6 @@ int MainWindow::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
 
 int MainWindow::onCommand (WPARAM wParam, LPARAM lParam)
 {
-	
 	return 0;
 }
 
@@ -165,7 +164,7 @@ int MainWindow::run()
 
 void MainWindow::cleanUp(){
 	if (m_hMainWnd != HWND_INVALID)
-		MainWindowThreadCleanup (m_hMainWnd);
+		::MainWindowThreadCleanup (m_hMainWnd);
 
 	if (TaskWindow::getInstance() != NULL)
 		TaskWindow::getInstance()->cleanUp();

@@ -19,6 +19,7 @@ class TaskWindow {
 public:
     
         static TaskWindow* getInstance();
+        static void releaseInstance();
         bool createTaskWindow(HWND hwnd);
         void cleanUp();
 protected:
