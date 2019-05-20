@@ -73,15 +73,25 @@ bool MainWindow::createWnd(int iLeft, int iTop, int iRight, int iBottom)
 	
 }
 
-void MainWindow::destroyWnd()
+void MainWindow::destroyWnd(HWND hWnd)
 {
+	ENTER_FUNCTION;
 	if (m_hMainWnd != HWND_INVALID)
 	{
-		::DestroyAllControls(m_hMainWnd);
-		::DestroyMainWindow(m_hMainWnd);
-		::PostQuitMessage(m_hMainWnd);
+		if (TaskWindow::getInstance() != NULL)
+			TaskWindow::getInstance()->cleanUp();
+		
+		if (MainFrame::getInstance() != NULL)
+			MainFrame::getInstance()->cleanUp();
+		
+		if (StatusWindow::getInstance () != NULL)
+			StatusWindow::getInstance ()->cleanUp();
+		
+		::DestroyAllControls(hWnd);
+		::DestroyMainWindow(hWnd);
+		::PostQuitMessage(hWnd);
 	}
-
+	OUT_FUNCTION;
 	return;
 }
 
@@ -106,8 +116,10 @@ int MainWindow::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case MSG_CLOSE:
-		pThis->destroyWnd();
-		break;
+		LOG_PRINT ("MSG_CLOSE\r\n");
+		if (MessageBox(hWnd, "Are you sure to qiut", "MessageBox", MB_YESNOCANCEL | MB_ICONQUESTION | MB_BASEDONPARENT) == IDYES)
+			pThis->destroyWnd(hWnd);
+		return 0;
 	default:
 		break;
 	}
@@ -122,19 +134,25 @@ int MainWindow::onCommand (WPARAM wParam, LPARAM lParam)
 
 int MainWindow::onCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	 bool bRet;
-	 LOG_PRINT ("main hwnd: %d\r\n", hWnd);
-	 bRet = TaskWindow::getInstance()->createTaskWindow(hWnd);
-	 if (!bRet){
+	bool bRet;
+
+	bRet = TaskWindow::getInstance()->createTaskWindow(hWnd);
+	if (!bRet){
 		LOG_ERR("create task window failed.\r\n");
 		return -1;
-	 }	
+	}	
 	
-	 bRet = MainFrame::getInstance()->createMainFrame (hWnd);
-	 if (!bRet){
+	bRet = MainFrame::getInstance()->createMainFrame (hWnd);
+	if (!bRet){
 		LOG_ERR("create main frame failed.\r\n");
 		return -1;
-	 }
+	}
+
+	bRet = StatusWindow::getInstance()->createStatusWindow(hWnd);
+	if (!bRet){
+		LOG_ERR ("create status window failed.\r\n");
+		return -1;
+	}
 	return 0;
 }
 
@@ -166,11 +184,6 @@ void MainWindow::cleanUp(){
 	if (m_hMainWnd != HWND_INVALID)
 		::MainWindowThreadCleanup (m_hMainWnd);
 
-	if (TaskWindow::getInstance() != NULL)
-		TaskWindow::getInstance()->cleanUp();
-	
-	if (MainFrame::getInstance() != NULL)
-		MainFrame::getInstance()->cleanUp();
 
 	m_hMainWnd = HWND_INVALID;
 	

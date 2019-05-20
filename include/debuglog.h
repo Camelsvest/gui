@@ -6,17 +6,17 @@
 #define DEBUG
 #ifdef DEBUG
 
-#define ENTER_FUNCTION printf("ENTER_FUNCTION:%s, %d\n\r", __FUNCTION__, __LINE__)
-#define OUT_FUNCTION printf("OUT_FUNCTION:%s, %d\n\r", __FUNCTION__, __LINE__)
+#define ENTER_FUNCTION printf("ENTER=>%s:%s, %d\n\r",__FILE__, __FUNCTION__, __LINE__)
+#define OUT_FUNCTION printf("OUT=>%s:%s, %d\n\r",__FILE__, __FUNCTION__, __LINE__)
 #define LOG_PRINT(msg, args...) \
 {   \
-fprintf(stdout, "LOG=>FUNCTION:%s LINE:%d->", __FUNCTION__, __LINE__); \
+fprintf(stdout, "LOG=>%s:%s LINE:%d->", __FILE__, __FUNCTION__, __LINE__); \
 fprintf(stdout, msg, ##args); \
 }
 
 #define LOG_ERR(msg, args...) \
 {   \
-fprintf(stderr, "ERROR=>FUNCTION:%s LINE:%d->", __FUNCTION__, __LINE__); \
+fprintf(stderr, "ERROR=>%s:%s LINE:%d->", __FILE__, __FUNCTION__, __LINE__); \
 fprintf(stderr, msg, ##args); \
 }
 #else

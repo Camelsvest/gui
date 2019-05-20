@@ -44,6 +44,7 @@ int TaskWindow::taskWndControlProc(HWND hWnd,int message,WPARAM wParam,LPARAM lP
 			break;
 		case MSG_CLOSE:
 			pThis->onClose();
+			return 0;
 		default:
 			break;
 
@@ -56,7 +57,7 @@ bool TaskWindow::createTaskWindow(HWND hwnd){
 	ENTER_FUNCTION; 
 	
 	registerTaskWindowControl();
-	GetWindowRect(hwnd, &rc);
+	::GetWindowRect(hwnd, &rc);
 	m_hTaskWnd = ::CreateWindow(TASKWND_CTRL_NAME, "", WS_CHILD | WS_VISIBLE, IDC_TASKWND, rc.left, rc.top, rc.right, TASKWND_HEIGHT, hwnd, 0);
 	m_hMainWnd = hwnd;
 	OUT_FUNCTION;
@@ -82,12 +83,11 @@ void TaskWindow::unregisterTaskWindowControl(){
 
 int TaskWindow::onCreate(HWND hWnd,WPARAM wParam, LPARAM lParam){
 	
-	::CreateWindow(CTRL_BUTTON, TASKWND_BTN_EXIT, WS_CHILD | WS_VISIBLE, IDC_EXIT, 0, 0, 60, TASKWND_HEIGHT, hWnd, 0);
+	::CreateWindow(CTRL_BUTTON, TASKWND_BTN_EXIT, WS_CHILD | WS_VISIBLE /*| WS_EX_TRANSPARENT*/, IDC_EXIT, 0, 0, 60, TASKWND_HEIGHT, hWnd, 0);
 	return 0;
 }
 
 int TaskWindow::onCommand (WPARAM wParam, LPARAM lParam){ 
-	TaskWindow *pThis = getInstance();
 	int id = LOWORD(wParam);
 	int code = HIWORD(wParam);
 	switch (id){
@@ -103,19 +103,25 @@ int TaskWindow::onCommand (WPARAM wParam, LPARAM lParam){
 }
 
 int TaskWindow::onPaint(WPARAM wParam, LPARAM lParam){
+	ENTER_FUNCTION;
+
+	OUT_FUNCTION;
 	return 0;
 }
 
 void TaskWindow::onClose(){
+	ENTER_FUNCTION;
 	
-	::DestroyAllControls(m_hTaskWnd);
-	::SendMessage(m_hMainWnd, MSG_CLOSE, 0, 0L);
+	::SendMessage(m_hMainWnd, MSG_CLOSE, 0, 0L); //发送给主窗口
 	
+	OUT_FUNCTION;
 }
 
 void TaskWindow::cleanUp(){
+	ENTER_FUNCTION;
+	m_hTaskWnd = HWND_INVALID;
 	getInstance()->unregisterTaskWindowControl();
-	
-	
+	getInstance()->releaseInstance();
+	OUT_FUNCTION;
 }
 

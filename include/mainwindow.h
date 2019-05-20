@@ -8,6 +8,7 @@
 #include <minigui/control.h>
 #include "taskwindow.h"
 #include "mainframe.h"
+#include "statuswindow.h"
 
 class MainWindow {
 public:
@@ -16,7 +17,7 @@ public:
     
     bool        isCreatedWnd();
     bool        createWnd(int iLeft,int iTop,int iRight,int iBottom);
-	void        destroyWnd();
+	void        destroyWnd(HWND hWnd);
     void        cleanUp();
     
     int         run();
@@ -35,6 +36,7 @@ protected:
 private:
     HWND                m_hMainWnd;
     static MainWindow   *m_pInstance;
+   
 };
 
 #endif
