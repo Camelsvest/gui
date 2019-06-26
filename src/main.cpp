@@ -15,9 +15,9 @@ int MiniGUIMain(int argc, const char *argv[])
 	if (gui.init())
 		gui.run();
 	
-		gui.uninit();
+	gui.uninit();
 	
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	
 	return 0;
 }

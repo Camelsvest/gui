@@ -16,6 +16,7 @@ GUI::~GUI()
 bool GUI::init()
 {
 	bool ret = false;
+
 	ENTER_FUNCTION;
 	if (m_pMainWindow == NULL)
 	{
@@ -33,7 +34,8 @@ bool GUI::init()
 			}
 		}
 	}
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
+
 	return ret;
 }
 
@@ -49,12 +51,13 @@ int GUI::run()
 			ret = m_pMainWindow->run();
 	}
 	
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	
 	return ret;
 }
 
-void GUI::uninit(){
+void GUI::uninit()
+{
 	if (m_pMainWindow != NULL){
 		m_pMainWindow->cleanUp();
 	}

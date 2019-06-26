@@ -60,7 +60,7 @@ bool TaskWindow::createTaskWindow(HWND hwnd){
 	::GetWindowRect(hwnd, &rc);
 	m_hTaskWnd = ::CreateWindow(TASKWND_CTRL_NAME, "", WS_CHILD | WS_VISIBLE, IDC_TASKWND, rc.left, rc.top, rc.right, TASKWND_HEIGHT, hwnd, 0);
 	m_hMainWnd = hwnd;
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	return true;
 }
 
@@ -105,7 +105,7 @@ int TaskWindow::onCommand (WPARAM wParam, LPARAM lParam){
 int TaskWindow::onPaint(WPARAM wParam, LPARAM lParam){
 	ENTER_FUNCTION;
 
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	return 0;
 }
 
@@ -114,7 +114,7 @@ void TaskWindow::onClose(){
 	
 	::SendMessage(m_hMainWnd, MSG_CLOSE, 0, 0L); //发送给主窗口
 	
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 }
 
 void TaskWindow::cleanUp(){
@@ -122,6 +122,6 @@ void TaskWindow::cleanUp(){
 	m_hTaskWnd = HWND_INVALID;
 	getInstance()->unregisterTaskWindowControl();
 	getInstance()->releaseInstance();
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 }
 

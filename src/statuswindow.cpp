@@ -43,7 +43,7 @@ bool StatusWindow::createStatusWindow(HWND hWnd){
 	if (m_hStatusWnd == HWND_INVALID)
 		bRet = false;
 
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	return bRet;
 }
 
@@ -101,7 +101,7 @@ void StatusWindow::onCreate(HWND hWnd,WPARAM wParam,LPARAM lParam){
 	
 	CreateWindow(CTRL_BUTTON, "Back<<", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_CHECKED, IDC_CTRL_STATUSWND_ONE, (g_rcScr.right - pos -72 - 72 - 72), 4, 64, 20, hWnd, 0);	
 
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 }
 
 void StatusWindow::onCommand(WPARAM wParam,LPARAM lParam){
@@ -120,7 +120,7 @@ void StatusWindow::cleanUp (){
 		free (m_pInstance);
 		m_pInstance = NULL;
 	}
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	
 }
 

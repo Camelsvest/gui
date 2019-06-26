@@ -182,7 +182,7 @@ bool MainFrame::createMainFrame(HWND hwnd){
 			return false;
 	}
 
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 
 	return bRet;
 }
@@ -375,7 +375,7 @@ int  MainFrame::onEraseBkgnd(WPARAM wParam, LPARAM lParam){
 	::FillBoxWithBitmap(hdc, 0, 36/*TASKWND_HEIGHT*/, RECTW(rcTemp), RECTH(rcTemp), pMf->m_pBmpBkGnd);
 	::ReleaseDC(hdc);
 
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	return 0;
 
 }
@@ -389,5 +389,5 @@ void MainFrame::cleanUp() {
 	::UnloadBitmap(m_pBmpBkGnd);
 	unregisterMainFrameControl ();
 	releaseInstance();
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 }

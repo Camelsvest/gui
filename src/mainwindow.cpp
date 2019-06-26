@@ -67,7 +67,7 @@ bool MainWindow::createWnd(int iLeft, int iTop, int iRight, int iBottom)
 			bRet = true;
 	}
 
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 
 	return bRet;
 	
@@ -91,7 +91,7 @@ void MainWindow::destroyWnd(HWND hWnd)
 		::DestroyMainWindow(hWnd);
 		::PostQuitMessage(hWnd);
 	}
-	OUT_FUNCTION;
+	EXIT_FUNCTION;
 	return;
 }
 
