@@ -2,7 +2,7 @@ C++ := g++
 AR  := ar
 
 MINIGUI_INCLUDE=-I/usr/local/include/minigui
-MINIGUI_LIB=-L/usr/local/lib -lminigui_procs
+MINIGUI_LIB=-L/usr/local/lib -lminigui_ths
 
 DEFINES := 
 INCLUDE := -Iinclude $(MINIGUI_INCLUDE) 
@@ -10,12 +10,13 @@ INCLUDE := -Iinclude $(MINIGUI_INCLUDE)
 CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
 LDFLAGS := -pthread
-LIBS    := $(MINIGUI_LIB) -lpng -ljpeg -lts
+#-lts
+LIBS    := $(MINIGUI_LIB) -lpng -ljpeg -ldl
 
 SOURCE  := $(wildcard src/*.cpp)
 OBJS    := $(patsubst %.cpp, %.o, $(SOURCE))
 
-TARGET := mginit
+TARGET := gui
 
 .PHONY : all objs clean rebuild
 
