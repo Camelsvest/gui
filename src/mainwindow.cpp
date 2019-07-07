@@ -1,190 +1,224 @@
-#include <assert.h>
-#include <stdlib.h>
 #include <string.h>
-
 #include "mainwindow.h"
-#include "debuglog.h"
+#include "navigator.h"
 
-MainWindow *MainWindow::m_pInstance = NULL;
+#define STR_CAP             "Notebook"
+#define STR_FILE             "File"
+#define STR_NEW              "New"
+#define STR_OPEN             "Open"
+#define STR_SAVE             "Save"
+#define STR_SAVE_AS          "Save As"
+#define STR_PRINT            "Print"
+#define STR_EXIT             "Exit"
 
-MainWindow * MainWindow::getInstance()
-{
-	if (m_pInstance == NULL)
-		m_pInstance = new MainWindow();
+#define STR_SEARCH           "Search"     
+#define STR_FIND             "Find"    
+#define STR_FIND_NEXT        "Find Next"
 
-	return m_pInstance;	
-}
+#define STR_EDIT             "Edit"
+#define STR_UNDO             "Undo"
+#define STR_CUT              "Cut"
+#define STR_COPY             "Copy"
+#define STR_PASTE            "Paste"
+#define STR_DELETE           "Delete"
+#define STR_SELECT_ALL       "Select All"
+#define STR_INSERT_DATE      "Insert Date"
+#define STR_AUTO_WRAP        "Auto Wrap"
+
+#define STR_VIEW             "View"
+#define STR_MODIFY_CFG       "Config"
+#define STR_DFL_CHAR_SET     "Default Char Set"
+#define STR_HELP             "Help"
+#define STR_ABOUT            "about notebook"
+#define STR_ABOUT_INFO       "notebook version 0.6\n"
+
+#define STR_OK               "Ok"
+#define STR_CANCEL           "Cancel"
+#define STR_SAVE_OR_NOT      "Save or Not Save?"
+#define STR_FILE_OPEN_FAILED "File Open Failed!" 
+#define STR_FILE_SAVE_FAILED "File Save Failed!"
+#define STR_FILE_TRUNCTED    "File Trunctd" 
+#define STR_FILE_NOT_EXIST   "File Not Exist!"
+#define STR_FILE_NOT_READABLE    "File not Readable"
+#define STR_FILE_NOT_WRITABLE    "File not Writable"
+
+#define STR_NEW_NOTEBOOK_SIZE    "New notebook size"
+#define STR_SPECIFY_VALID_SIZE        "Please specify valid notebook size."
+#define STR_SPECIFY_NEW_WIN_SIZE      "Please specify new window size."
+#define STR_COL_NUM                      "Collum:"
+#define STR_ROW_NUM                      "Row:"
+#define STR_MODIFIED_IS_SAVE             "File Modified, Save or Not?"
+
+#define IDM_NEW         301
+#define IDM_OPEN        120
+#define IDM_SAVE        130
+#define IDM_SAVEAS      140
+#define IDM_PRINT       150
+#define IDM_EXIT        160
+#define IDM_ABOUT       410
+#define IDM_ABOUT_THIS  411
+#define IDC_MLEDIT      104
+
 
 MainWindow::MainWindow()
-	: m_hMainWnd(HWND_INVALID)
+    : m_hMLEditWnd(HWND_INVALID)
 {
 }
 
 MainWindow::~MainWindow()
-{	
-}
-
-void MainWindow::releaseInstance()
 {
-	if (m_pInstance)
-	{
-		delete m_pInstance;
-		m_pInstance = NULL;
-	}
 }
 
-
-bool MainWindow::isCreatedWnd()
+bool MainWindow::create()
 {
-	return (m_hMainWnd != HWND_INVALID);
-}
+    return createMainWindow(STR_CAP, createMenu(), GetSystemCursor(0), 0, 
+        WS_CAPTION | WS_BORDER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_SYSMENU,
+        WS_EX_IMECOMPOSE, 0, 0, 600, 480);
+}    
 
-bool MainWindow::createWnd(int iLeft, int iTop, int iRight, int iBottom)
+void MainWindow::run()
 {
-	MAINWINCREATE CreateInfo;
-	bool bRet = false;
-	ENTER_FUNCTION;
-	if (m_hMainWnd == HWND_INVALID)
-	{
-		memset(&CreateInfo, 0, sizeof(CreateInfo));
-		
-		CreateInfo.dwStyle = WS_VISIBLE;
-		CreateInfo.dwExStyle = WS_EX_CLIPCHILDREN;
-		CreateInfo.spCaption = "";
-		CreateInfo.hMenu = 0;
-		CreateInfo.hCursor = ::GetSystemCursor(0);
-		CreateInfo.hIcon = 0;
-		CreateInfo.MainWindowProc = MainWindow::wndProc;
-		CreateInfo.lx = iLeft;
-		CreateInfo.ty = iTop;
-		CreateInfo.rx = iRight;
-		CreateInfo.by = iBottom;
-		CreateInfo.iBkColor = COLOR_lightwhite;
-		CreateInfo.dwAddData = 0;
-		CreateInfo.hHosting = HWND_DESKTOP;
-		m_hMainWnd = ::CreateMainWindow(&CreateInfo);
-		if (m_hMainWnd != HWND_INVALID)
-			bRet = true;
-	}
-
-	EXIT_FUNCTION;
-
-	return bRet;
-	
+    showWindow();
+    
+    return;
 }
 
-void MainWindow::destroyWnd(HWND hWnd)
+int MainWindow::onCreate(WPARAM wParam, LPARAM lParam)
 {
-	ENTER_FUNCTION;
-	if (m_hMainWnd != HWND_INVALID)
-	{
-		if (TaskWindow::getInstance() != NULL)
-			TaskWindow::getInstance()->cleanUp();
-		
-		if (MainFrame::getInstance() != NULL)
-			MainFrame::getInstance()->cleanUp();
-		
-		if (StatusWindow::getInstance () != NULL)
-			StatusWindow::getInstance ()->cleanUp();
-		
-		::DestroyAllControls(hWnd);
-		::DestroyMainWindow(hWnd);
-		::PostQuitMessage(hWnd);
-	}
-	EXIT_FUNCTION;
-	return;
+    RECT client;
+    GetClientRect(getHandle(), &client);
+    
+    m_hMLEditWnd = CreateWindow ("medit", 
+                     "",  WS_CHILD | WS_VISIBLE | WS_BORDER | WS_HSCROLL | WS_VSCROLL,
+                    IDC_MLEDIT, 0, 0, client.right,client.bottom , getHandle(), 0);
+
+    
+
+    return 0;
 }
 
-int MainWindow::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
+int MainWindow::onShowWindow(WPARAM wParam, LPARAM lParam)
 {
-	MainWindow *pThis = getInstance();
-	
-	switch(message)
-	{
-	case MSG_CREATE:
-		pThis->onCreate(hWnd, wParam, lParam);
-		break;
-
-	case MSG_NCCREATE:
-		break;
-
-	case MSG_COMMAND:
-		pThis->onCommand (wParam, lParam);
-		break;
-	case MSG_PAINT:
-		pThis->onPaint(wParam, lParam);
-		break;
-
-	case MSG_CLOSE:
-		LOG_PRINT ("MSG_CLOSE\r\n");
-		if (MessageBox(hWnd, "Are you sure to qiut", "MessageBox", MB_YESNOCANCEL | MB_ICONQUESTION | MB_BASEDONPARENT) == IDYES)
-			pThis->destroyWnd(hWnd);
-		return 0;
-	default:
-		break;
-	}
-
-	return DefaultMainWinProc(hWnd, message, wParam, lParam);
+    if (m_hMLEditWnd != HWND_INVALID)
+        SetFocus (m_hMLEditWnd);
+    
+    return 0;
 }
 
-int MainWindow::onCommand (WPARAM wParam, LPARAM lParam)
+int MainWindow::onClose(WPARAM wParam, LPARAM lParam)
 {
-	return 0;
+    if (IDYES == messageBox("Are you sure?", "Quit", MB_ICONQUESTION|MB_YESNO))
+        return Wnd::onClose(wParam, lParam);
+    else
+        return -1;
 }
 
-int MainWindow::onCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
+
+HMENU MainWindow::createMenu()
 {
-	bool bRet;
+    HMENU hmnu;
+    MENUITEMINFO mii;
 
-	bRet = TaskWindow::getInstance()->createTaskWindow(hWnd);
-	if (!bRet){
-		LOG_ERR("create task window failed.\r\n");
-		return -1;
-	}	
-	
-	bRet = MainFrame::getInstance()->createMainFrame (hWnd);
-	if (!bRet){
-		LOG_ERR("create main frame failed.\r\n");
-		return -1;
-	}
+    hmnu = CreateMenu();
 
-	bRet = StatusWindow::getInstance()->createStatusWindow(hWnd);
-	if (!bRet){
-		LOG_ERR ("create status window failed.\r\n");
-		return -1;
-	}
-	return 0;
+    memset (&mii, 0, sizeof(MENUITEMINFO));
+    mii.type        = MFT_STRING;
+    mii.id          = 100;
+    mii.typedata    = (DWORD)STR_FILE;
+    mii.hsubmenu    = createMenuFile ();
+
+    InsertMenuItem(hmnu, 0, TRUE, &mii);
+
+    mii.type        = MFT_STRING;
+    mii.id          = 110;
+    mii.typedata    = (DWORD)STR_HELP;
+    mii.hsubmenu    = createMenuAbout ();
+    InsertMenuItem(hmnu, 1, TRUE, &mii);
+                       
+    return hmnu;
+    
 }
 
-int MainWindow::onPaint(WPARAM wParam, LPARAM lParam)
+HMENU MainWindow::createMenuFile(void)
 {
-	return 0;
+    HMENU hmnu;
+    MENUITEMINFO mii;
+    memset (&mii, 0, sizeof(MENUITEMINFO));
+    mii.type        = MFT_STRING;
+    mii.id          = 0;
+    mii.typedata    = (DWORD)STR_FILE;
+    hmnu = CreatePopupMenu (&mii);
+    
+    memset (&mii, 0, sizeof(MENUITEMINFO));
+    mii.type        = MFT_STRING;
+    mii.state       = 0;
+    mii.id          = IDM_NEW;
+    mii.typedata    = (DWORD)STR_NEW;
+    InsertMenuItem(hmnu, 0, TRUE, &mii);
+    
+    mii.type        = MFT_STRING;
+    mii.state       = 0;
+    mii.id          = IDM_OPEN;
+    mii.typedata    = (DWORD)STR_OPEN;
+    InsertMenuItem(hmnu, 1, TRUE, &mii);
+    
+    mii.type        = MFT_STRING;
+    mii.state       = 0;
+    mii.id          = IDM_SAVE;
+    mii.typedata    = (DWORD)STR_SAVE;
+    InsertMenuItem(hmnu, 2, TRUE, &mii);
+    
+    mii.type        = MFT_STRING;
+    mii.state       = 0;
+    mii.id          = IDM_SAVEAS;
+    mii.typedata    = (DWORD)STR_SAVE_AS;
+    InsertMenuItem(hmnu, 3, TRUE, &mii);
+
+    mii.type        = MFT_SEPARATOR;
+    mii.state       = 0;
+    mii.id          = 0;
+    mii.typedata    = 0;
+    InsertMenuItem(hmnu, 4, TRUE, &mii);
+
+    mii.type        = MFT_STRING;
+    mii.state       = 0;
+    mii.id          = IDM_PRINT;
+    mii.typedata    = (DWORD)STR_PRINT;
+    InsertMenuItem(hmnu, 5, TRUE, &mii);
+    
+    mii.type        = MFT_SEPARATOR;
+    mii.state       = 0;
+    mii.id          = 0;
+    mii.typedata    = 0;
+    InsertMenuItem(hmnu, 6, TRUE, &mii);
+
+    mii.type        = MFT_STRING;
+    mii.state       = 0;
+    mii.id          = IDM_EXIT;
+    mii.typedata    = (DWORD)STR_EXIT;
+    InsertMenuItem(hmnu, 7, TRUE, &mii);
+
+    return hmnu;
 }
 
-int MainWindow::run()
+HMENU MainWindow::createMenuAbout(void)
 {
-	MSG msg;
-	int ret = -1;
-
-	if (m_hMainWnd != HWND_INVALID)
-	{
-		while(::GetMessage(&msg, m_hMainWnd))
-		{
-			::TranslateMessage(&msg);
-			::DispatchMessage(&msg);
-		}
-
-		ret = 0;
-	}
-	
-	return ret;
+    HMENU hmnu;
+    MENUITEMINFO mii;
+    memset (&mii, 0, sizeof(MENUITEMINFO));
+    mii.type        = MFT_STRING;
+    mii.id          = 0;
+    mii.typedata    = (DWORD)STR_HELP;
+    hmnu = CreatePopupMenu (&mii);
+    
+    memset (&mii, 0, sizeof(MENUITEMINFO));
+    mii.type        = MFT_STRING ;
+    mii.state       = 0;
+    mii.id          = IDM_ABOUT_THIS;
+    mii.typedata    = (DWORD)STR_ABOUT;
+    InsertMenuItem(hmnu, 0, TRUE, &mii);
+    
+    return hmnu;
 }
 
-void MainWindow::cleanUp(){
-	if (m_hMainWnd != HWND_INVALID)
-		::MainWindowThreadCleanup (m_hMainWnd);
 
-
-	m_hMainWnd = HWND_INVALID;
-	
-}
