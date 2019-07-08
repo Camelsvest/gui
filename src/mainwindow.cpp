@@ -1,6 +1,7 @@
 #include <string.h>
+#include <stdexcept>
+
 #include "mainwindow.h"
-#include "navigator.h"
 
 #define STR_CAP             "Notebook"
 #define STR_FILE             "File"
@@ -57,16 +58,26 @@
 #define IDM_EXIT        160
 #define IDM_ABOUT       410
 #define IDM_ABOUT_THIS  411
+
 #define IDC_MLEDIT      104
+#define IDC_NAVIGATOR   105
 
 
 MainWindow::MainWindow()
     : m_hMLEditWnd(HWND_INVALID)
+    , m_nvgt(NULL)
 {
+    if (!Navigator::registerNavigatorControl())
+        throw std::logic_error("Failed to register \"Navigator\" control!");
+    
 }
 
 MainWindow::~MainWindow()
 {
+    if (m_nvgt)
+        delete m_nvgt;
+    
+    Navigator::unregisterNavigatorControl();
 }
 
 bool MainWindow::create()
@@ -90,9 +101,11 @@ int MainWindow::onCreate(WPARAM wParam, LPARAM lParam)
     
     m_hMLEditWnd = CreateWindow ("medit", 
                      "",  WS_CHILD | WS_VISIBLE | WS_BORDER | WS_HSCROLL | WS_VSCROLL,
-                    IDC_MLEDIT, 0, 0, client.right,client.bottom , getHandle(), 0);
+                    IDC_MLEDIT, 0, 0, client.right, client.bottom-200, getHandle(), 0);
 
-    
+    m_nvgt = new Navigator;
+    m_nvgt->createWindow(CTRL_NAVIGATOR, "", WS_CHILD|WS_VISIBLE|WS_BORDER, 0, IDC_NAVIGATOR,
+        0, client.bottom-199, client.right, client.bottom, getHandle());
 
     return 0;
 }

@@ -16,19 +16,18 @@ public:
     Navigator();
     virtual ~Navigator();
 
-    bool createWindow(const char *pszCaption, DWORD dwStyle, DWORD dwExStyle,
-        int id, int x, int y, int w, int  h, HWND hParentWnd, DWORD dwAddDara);
+    static bool registerNavigatorControl();
+    static void unregisterNavigatorControl();
 
 protected:
 	virtual int wndProc(int message, WPARAM wParam, LPARAM lParam);
     virtual int onCreate(WPARAM wParam, LPARAM lParam);
-
+	virtual int onPaint(WPARAM wParam, LPARAM lParam);
 	virtual int onAddPage(WPARAM wParam, LPARAM lParam);
 
 private:
-    bool registerNavigatorControl();
-    void unregisterNavigatorControl();
-    
+    virtual int onDraw(HDC hdc);
+	
 private:
     int	m_tabHeiht;
 

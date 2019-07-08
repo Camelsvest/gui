@@ -2,6 +2,7 @@
 #define _MAINWINDOW_H_
 
 #include "wnd.h"
+#include "navigator.h"
 
 class MainWindow : public Wnd {
 public:
@@ -24,6 +25,9 @@ private:
 private:
 	HWND	m_hMainWnd;
 	HWND 	m_hMLEditWnd;
+
+	Navigator *m_nvgt;
+	
 };
 
 

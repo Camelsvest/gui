@@ -31,6 +31,8 @@ public:
     bool showWindow();
 	
 protected:
+	bool getClientRect(RECT &rc);
+	
 	static int wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam);
 	virtual int wndProc(int message, WPARAM wParam, LPARAM lParam);
 

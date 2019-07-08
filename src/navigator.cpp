@@ -1,16 +1,12 @@
-#include <stdexcept>
 #include "navigator.h"
 
 Navigator::Navigator()
     : m_ActivatePageIterator(m_nvgtPageList.end())
 {
-    if (!registerNavigatorControl())
-        throw std::logic_error("Failed to register \"Navigator\" control!");
 }
 
 Navigator::~Navigator()
 {
-    unregisterNavigatorControl();
 }
 
 int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
@@ -22,11 +18,16 @@ int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
     case MSG_CREATE:
         ret = onCreate(wParam, lParam);
         break;
+
+    case MSG_PAINT:
+        ret = onPaint(wParam, lParam);
+        break;
         
     case MSG_NVGT_ADDPAGE:
         ret = onAddPage(wParam, lParam);
         break;
-            
+
+    case MSG_NCPAINT:        
     default:
         ret = DefaultMainWinProc(getHandle(), message, wParam, lParam);
         break;
@@ -38,6 +39,36 @@ int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
 
 int Navigator::onCreate(WPARAM wParam, LPARAM lParam)
 {
+    return 0;
+}
+
+int Navigator::onPaint(WPARAM wParam, LPARAM lParam)
+{
+    int ret;
+    HWND hwnd = getHandle();
+    HDC hdc = ::BeginPaint(hwnd);
+
+    ret = onDraw(hdc);
+    ::EndPaint(hwnd, hdc);
+
+    return ret;
+}
+
+int Navigator::onDraw(HDC hdc)
+{
+    RECT rc;
+    DWORD mainColor;
+    HWND hwnd = getHandle();
+
+    mainColor = ::GetWindowElementAttr (hwnd, WE_MAINC_THREED_BODY);
+
+    if (getClientRect(rc))
+    {
+        rc.bottom = 50;
+        ((WINDOWINFO*)GetWindowInfo (hwnd))->we_rdr->draw_3dbox(hdc, 
+            &rc, mainColor, LFRDR_BTN_STATUS_NORMAL);
+    }
+
     return 0;
 }
 

@@ -76,6 +76,11 @@ bool Wnd::showWindow()
     return true;
 }
 
+bool Wnd::getClientRect(RECT &rc)
+{
+    return (::GetClientRect(m_hWnd, &rc) == TRUE);
+}
+
 
 int Wnd::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
 {
