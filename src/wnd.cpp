@@ -76,6 +76,16 @@ bool Wnd::showWindow()
     return true;
 }
 
+DWORD Wnd::getWindowElementAttr(int weAttrId)
+{
+    return ::GetWindowElementAttr(m_hWnd, weAttrId);
+}
+
+WINDOW_ELEMENT_RENDERER* Wnd::getWindowElementRender()
+{
+    return ((WINDOWINFO*)GetWindowInfo(m_hWnd))->we_rdr;
+}
+
 bool Wnd::getClientRect(RECT &rc)
 {
     return (::GetClientRect(m_hWnd, &rc) == TRUE);

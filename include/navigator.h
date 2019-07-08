@@ -27,9 +27,11 @@ protected:
 
 private:
     virtual int onDraw(HDC hdc);
-	
+	int drawTabBar(HDC hdc);
+    int drawActivatePage(HDC hdc);
+    
 private:
-    int	m_tabHeiht;
+    int	m_tabHeight;
 
 	typedef std::list<NavigatorPage *> NvgtPageList;
 	NvgtPageList			m_nvgtPageList;

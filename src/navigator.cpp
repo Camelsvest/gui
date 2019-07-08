@@ -1,7 +1,10 @@
 #include "navigator.h"
 
+#define DEFAULT_TAB_HEIGHT  48
+
 Navigator::Navigator()
-    : m_ActivatePageIterator(m_nvgtPageList.end())
+    : m_tabHeight(DEFAULT_TAB_HEIGHT)
+    , m_ActivatePageIterator(m_nvgtPageList.end())
 {
 }
 
@@ -39,36 +42,53 @@ int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
 
 int Navigator::onCreate(WPARAM wParam, LPARAM lParam)
 {
+    
     return 0;
 }
 
 int Navigator::onPaint(WPARAM wParam, LPARAM lParam)
 {
     int ret;
-    HWND hwnd = getHandle();
-    HDC hdc = ::BeginPaint(hwnd);
+    HDC hdc = beginPaint();
 
     ret = onDraw(hdc);
-    ::EndPaint(hwnd, hdc);
+    endPaint(hdc);
 
     return ret;
 }
 
 int Navigator::onDraw(HDC hdc)
 {
+    int ret;
+
+    ret = drawTabBar(hdc);
+    if (ret == 0)
+        drawActivatePage(hdc);
+
+    return 0;
+}
+
+int Navigator::drawTabBar(HDC hdc)
+{
     RECT rc;
     DWORD mainColor;
-    HWND hwnd = getHandle();
+    
+    if (!getClientRect(rc))
+        return -1;
+        
+    if (rc.bottom < m_tabHeight)
+        return -1;
 
-    mainColor = ::GetWindowElementAttr (hwnd, WE_MAINC_THREED_BODY);
+    mainColor = getWindowElementAttr(WE_MAINC_THREED_BODY);
+    rc.bottom = m_tabHeight;
+    
+    getWindowElementRender()->draw_3dbox(hdc, &rc, mainColor, LFRDR_BTN_STATUS_NORMAL);
 
-    if (getClientRect(rc))
-    {
-        rc.bottom = 50;
-        ((WINDOWINFO*)GetWindowInfo (hwnd))->we_rdr->draw_3dbox(hdc, 
-            &rc, mainColor, LFRDR_BTN_STATUS_NORMAL);
-    }
+    return 0;
+}
 
+int Navigator::drawActivatePage(HDC hdc)
+{
     return 0;
 }
 

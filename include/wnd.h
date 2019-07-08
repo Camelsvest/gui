@@ -25,10 +25,16 @@ public:
 		return m_hWnd;
 	}
 
+    HDC beginPaint() { return ::BeginPaint(m_hWnd); }
+    void endPaint(HDC hdc) { ::EndPaint(m_hWnd, hdc); }
+    
 	HWND getHandle() { return m_hWnd; }
 	int	messageBox(const char *pszText, const char *pszCaption, DWORD dwStyle);
 
     bool showWindow();
+
+    DWORD getWindowElementAttr(int weAttrId);
+    WINDOW_ELEMENT_RENDERER* getWindowElementRender();
 	
 protected:
 	bool getClientRect(RECT &rc);
