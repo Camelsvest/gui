@@ -1,11 +1,22 @@
+#include <assert.h>
+#include <stdexcept>
 #include "navigator.h"
+#include "navigatorres.h"
 
 #define DEFAULT_TAB_HEIGHT  48
 
 Navigator::Navigator()
-    : m_tabHeight(DEFAULT_TAB_HEIGHT)
+    : CtrlWnd(CTRL_NAVIGATOR)
+    , m_nvgtTab(NULL)
     , m_ActivatePageIterator(m_nvgtPageList.end())
 {
+    NavigatorPage *page;
+
+    page = new NavigatorPage("Page1", 0);
+    addPage(page);
+
+    page = new NavigatorPage("Page2", 0);
+    addPage(page);
 }
 
 Navigator::~Navigator()
@@ -26,10 +37,6 @@ int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
         ret = onPaint(wParam, lParam);
         break;
         
-    case MSG_NVGT_ADDPAGE:
-        ret = onAddPage(wParam, lParam);
-        break;
-
     case MSG_NCPAINT:        
     default:
         ret = DefaultMainWinProc(getHandle(), message, wParam, lParam);
@@ -42,90 +49,47 @@ int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
 
 int Navigator::onCreate(WPARAM wParam, LPARAM lParam)
 {
-    
-    return 0;
-}
-
-int Navigator::onPaint(WPARAM wParam, LPARAM lParam)
-{
-    int ret;
-    HDC hdc = beginPaint();
-
-    ret = onDraw(hdc);
-    endPaint(hdc);
-
-    return ret;
-}
-
-int Navigator::onDraw(HDC hdc)
-{
-    int ret;
-
-    ret = drawTabBar(hdc);
-    if (ret == 0)
-        drawActivatePage(hdc);
-
-    return 0;
-}
-
-int Navigator::drawTabBar(HDC hdc)
-{
-    RECT rc;
-    DWORD mainColor;
-    
-    if (!getClientRect(rc))
-        return -1;
+    bool succeed;
+    RECT rc;    
+    NavigatorPage *activatePage;
         
-    if (rc.bottom < m_tabHeight)
+    if (!getClientRect(&rc))
         return -1;
 
-    mainColor = getWindowElementAttr(WE_MAINC_THREED_BODY);
-    rc.bottom = m_tabHeight;
+    assert(m_nvgtTab == NULL);
+    m_nvgtTab = new NavigatorTab;
+    succeed = m_nvgtTab->createWindow(IDC_NAVIGATOR_TAB, 0, 0, rc.right, DEFAULT_TAB_HEIGHT, getHandle());
+    if (!succeed)
+        return -1;
     
-    getWindowElementRender()->draw_3dbox(hdc, &rc, mainColor, LFRDR_BTN_STATUS_NORMAL);
 
+    activatePage = *m_ActivatePageIterator;
+    if (activatePage)
+    {
+        succeed = activatePage->createWindow(IDC_NAVIGATOR_PAGE2, 0, DEFAULT_TAB_HEIGHT+1, rc.right, rc.bottom, getHandle());
+        if (!succeed)
+            return -1;
+    }
+        
     return 0;
 }
 
-int Navigator::drawActivatePage(HDC hdc)
+bool Navigator::addPage(NavigatorPage *page, bool activated)
 {
-    return 0;
-}
-
-int Navigator::onAddPage(WPARAM wParam, LPARAM lParam)
-{
-    bool activated;
-    NavigatorPage *page;
-
-    page = (NavigatorPage *)lParam;
     m_nvgtPageList.push_back(page);
-
-    activated = (wParam != 0);
 
     if (!activated)
         m_ActivatePageIterator = m_nvgtPageList.begin();
     else
         m_ActivatePageIterator = --m_nvgtPageList.end(); // current page is activated
         
-    return 0;
+    return true;
 }
 
-bool Navigator::registerNavigatorControl()
+bool Navigator::delPage(NavigatorPage *page)
 {
-    WNDCLASS wndClass;
-
-    wndClass.spClassName = CTRL_NAVIGATOR;
-    wndClass.dwStyle     = WS_NONE;
-    wndClass.dwExStyle   = WS_EX_NONE;
-    wndClass.hCursor     = GetSystemCursor (0);
-    wndClass.iBkColor    = GetWindowElementPixel (HWND_NULL, WE_MAINC_THREED_BODY);
-    wndClass.WinProc     = Wnd::wndProc;
-
-    return (::RegisterWindowClass (&wndClass) == TRUE);
+    m_nvgtPageList.remove(page);
+    return true;
 }
 
-void Navigator::unregisterNavigatorControl()
-{
-    ::UnregisterWindowClass(CTRL_NAVIGATOR);
-}
 

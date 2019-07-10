@@ -3,39 +3,33 @@
 
 #include <list>
 #include "navigatorpage.h"
+#include "navigatortab.h"
 
 #define MSG_NVGT_BASEINDEX	(MSG_USER + 1000)
-#define MSG_NVGT_ADDPAGE	(MSG_NVGT_BASEINDEX + 1)
-#define MSG_NVGT_DELPAGE	(MSG_NVGT_BASEINDEX + 2)
 
 #define CTRL_NAVIGATOR  ("NVGTCTRL")
 
-class Navigator : public Wnd {
+class Navigator : public CtrlWnd {
 
 public:
     Navigator();
     virtual ~Navigator();
 
-    static bool registerNavigatorControl();
-    static void unregisterNavigatorControl();
-
+	bool addPage(NavigatorPage *page, bool activated = true);
+	bool delPage(NavigatorPage *page);
+	
 protected:
 	virtual int wndProc(int message, WPARAM wParam, LPARAM lParam);
     virtual int onCreate(WPARAM wParam, LPARAM lParam);
-	virtual int onPaint(WPARAM wParam, LPARAM lParam);
-	virtual int onAddPage(WPARAM wParam, LPARAM lParam);
 
-private:
-    virtual int onDraw(HDC hdc);
-	int drawTabBar(HDC hdc);
-    int drawActivatePage(HDC hdc);
     
 private:
-    int	m_tabHeight;
-
+	NavigatorTab *m_nvgtTab;
+	
 	typedef std::list<NavigatorPage *> NvgtPageList;
 	NvgtPageList			m_nvgtPageList;
 	NvgtPageList::iterator	m_ActivatePageIterator;
+
 };
 
 #endif

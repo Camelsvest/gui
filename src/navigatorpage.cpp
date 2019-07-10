@@ -1,8 +1,12 @@
 #include <stdlib.h>
+#include <stdexcept>
 #include "navigatorpage.h"
 
+#define CTRL_NAVIGATOR_PAGE  ("NVGTCTRL_PAGE")
+
 NavigatorPage::NavigatorPage(const char *pszTitle, HICON hIcon)
-    : m_title(pszTitle)
+    : CtrlWnd(CTRL_NAVIGATOR_PAGE)
+    , m_title(pszTitle)
     , m_icon(hIcon)
 {
 }
@@ -16,15 +20,13 @@ int NavigatorPage::onCreate(WPARAM wParam, LPARAM lParam)
     return 0;   
 }
 
-int NavigatorPage::onPaint(WPARAM wParam, LPARAM lParam)
+int NavigatorPage::onDraw(HDC hdc)
 {
     DWORD mainColor;
     RECT rc;    
-    HDC hdc;
 
     if (getClientRect(rc))
     {
-        hdc = beginPaint();
         mainColor = getWindowElementAttr(WE_MAINC_THREED_BODY);
         rc.top += 1;
         rc.left += 1;
@@ -32,8 +34,6 @@ int NavigatorPage::onPaint(WPARAM wParam, LPARAM lParam)
         rc.bottom -= 1;
         
         getWindowElementRender()->draw_3dbox(hdc, &rc, mainColor, LFRDR_BTN_STATUS_NORMAL);
-
-        endPaint(hdc);        
     }
 
     return 0;

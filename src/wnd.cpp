@@ -10,6 +10,25 @@ Wnd::~Wnd()
 {
 }
 
+bool Wnd::registerWndClass(const char *pszWndClassName)
+{
+    WNDCLASS wndClass;
+
+    wndClass.spClassName = pszWndClassName;
+    wndClass.dwStyle     = WS_NONE;
+    wndClass.dwExStyle   = WS_EX_NONE;
+    wndClass.hCursor     = GetSystemCursor (0);
+    wndClass.iBkColor    = GetWindowElementPixel (HWND_NULL, WE_MAINC_THREED_BODY);
+    wndClass.WinProc     = Wnd::wndProc;
+
+    return (::RegisterWindowClass (&wndClass) == TRUE);
+}
+
+void Wnd::unregisterWndClass(const char *pszWndClassName)
+{
+    ::UnregisterWindowClass(pszWndClassName);
+}
+
 bool Wnd::createMainWindow(const char *pszCaption, HMENU hMenu,
     HCURSOR hCursor, HICON hIcon, DWORD dwStyle, DWORD dwExStyle,
     int x, int y, int w, int  h)
@@ -91,6 +110,10 @@ bool Wnd::getClientRect(RECT &rc)
     return (::GetClientRect(m_hWnd, &rc) == TRUE);
 }
 
+bool Wnd::getClientRect(RECT *rc)
+{
+    return (::GetClientRect(m_hWnd, rc) == TRUE);
+}
 
 int Wnd::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
 {
@@ -129,7 +152,11 @@ int Wnd::wndProc(int message, WPARAM wParam, LPARAM lParam)
     case MSG_SHOWWINDOW:
         ret = onShowWindow(wParam, lParam);
         break;
-            
+
+    case MSG_PAINT:
+        ret = onPaint(wParam, lParam);
+        break;
+        
     default:
         ret = DefaultMainWinProc(m_hWnd, message, wParam, lParam);
         break;
@@ -158,6 +185,22 @@ int Wnd::onShowWindow(WPARAM wParam, LPARAM lParam)
 {
     assert(false);
     return -1;
+}
+
+int Wnd::onPaint(WPARAM wParam, LPARAM lParam)
+{
+    int ret;
+    HDC hdc = beginPaint();
+
+    ret = onDraw(hdc);
+    endPaint(hdc);
+
+    return ret;      
+}
+
+int Wnd::onDraw(HDC hdc)
+{
+    return 0;
 }
 
 

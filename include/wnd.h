@@ -12,6 +12,9 @@ public:
 	Wnd();
 	virtual ~Wnd();
 
+    bool registerWndClass(const char *pszWndClassName);
+    void unregisterWndClass(const char *pszWndClassName);
+
     bool createMainWindow(const char *pszCaption, HMENU hMenu,
         HCURSOR hCursor, HICON hIcon, DWORD dwStyle, DWORD dwExStyle,
         int x, int y, int w, int  h);
@@ -38,6 +41,7 @@ public:
 	
 protected:
 	bool getClientRect(RECT &rc);
+	bool getClientRect(RECT *rc);
 	
 	static int wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam);
 	virtual int wndProc(int message, WPARAM wParam, LPARAM lParam);
@@ -46,6 +50,8 @@ protected:
 	virtual int onClose(WPARAM wParam, LPARAM lParam);
 	virtual int onMaximize(WPARAM wParam, LPARAM lParam);
     virtual int onShowWindow(WPARAM wPara, LPARAM lParam);
+	virtual int onPaint(WPARAM wParam, LPARAM lParam);
+	virtual int onDraw(HDC hdc);
 	
 private:
 	HWND	m_hWnd;
