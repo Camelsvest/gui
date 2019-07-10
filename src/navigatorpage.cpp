@@ -28,10 +28,10 @@ int NavigatorPage::onDraw(HDC hdc)
     if (getClientRect(rc))
     {
         mainColor = getWindowElementAttr(WE_MAINC_THREED_BODY);
-        rc.top += 1;
-        rc.left += 1;
-        rc.right -= 1;
-        rc.bottom -= 1;
+        rc.top += 5;
+        rc.left += 5;
+        rc.right -= 5;
+        rc.bottom -= 5;
         
         getWindowElementRender()->draw_3dbox(hdc, &rc, mainColor, LFRDR_BTN_STATUS_NORMAL);
     }

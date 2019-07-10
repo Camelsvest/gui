@@ -1,28 +1,36 @@
 #include <stdexcept>
 #include "ctrlwnd.h"
+#include "registeredwndclasses.h"
 
 CtrlWnd::CtrlWnd(const char *pszWndClassName)
-    : m_nRefCount(0)
-    , m_wndClassName(pszWndClassName)
+    : m_wndClassName(pszWndClassName)
 {  
-    if (m_nRefCount <= 0)
-    {
-        if (!registerWndClass(m_wndClassName.c_str()))
+    int refCount;
+    RegisteredWndClasses *instance = RegisteredWndClasses::getInstance();
+    if (instance)
+    {            
+        refCount = instance->addRefWndClass(pszWndClassName);
+        if (refCount == 1)  // first time
         {
-            std::string str;
-            str = "Failed to register wndClass: ";
-            str += m_wndClassName;
-            throw new std::logic_error(str);
+            if (!registerWndClass(pszWndClassName))
+            {
+                std::string msg;
+                msg = "Failed to register wndClass: ";
+                msg += pszWndClassName;
+
+                throw new std::logic_error(msg);
+            }
         }
     }
-    ++m_nRefCount;    
 }
 
 CtrlWnd::~CtrlWnd()
 {
-    --m_nRefCount;
-    if (m_nRefCount <= 0)
-        unregisterWndClass(m_wndClassName.c_str());
+    RegisteredWndClasses *instance = RegisteredWndClasses::getInstance();
+    if (instance)
+    {
+        instance->releaseWndClass(m_wndClassName.c_str());
+    }
 }
 
 bool CtrlWnd::createWindow(int id, int left, int top, int width, int height, HWND hParent)

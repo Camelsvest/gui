@@ -14,7 +14,6 @@ public:
 	bool createWindow(int id, int left, int top, int width, int height, HWND hParent);
 
 private:
-	int m_nRefCount;
 	std::string m_wndClassName;
 };
 
