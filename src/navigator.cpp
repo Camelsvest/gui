@@ -66,7 +66,7 @@ int Navigator::onCreate(WPARAM wParam, LPARAM lParam)
     activatePage = *m_ActivatePageIterator;
     if (activatePage)
     {
-        succeed = activatePage->createWindow(IDC_NAVIGATOR_PAGE2, 0, DEFAULT_TAB_HEIGHT+1, rc.right, rc.bottom, getHandle());
+        succeed = activatePage->createWindow(IDC_NAVIGATOR_PAGE2, 0, DEFAULT_TAB_HEIGHT+1, rc.right, rc.bottom - DEFAULT_TAB_HEIGHT - 1, getHandle());
         if (!succeed)
             return -1;
     }
