@@ -4,18 +4,22 @@ AR  := ar
 MINIGUI_INCLUDE=-I/usr/local/include/minigui
 MINIGUI_LIB=-L/usr/local/lib -lminigui_ths
 
+LOGGING_INCLUDE=-Ilogging
+LOGGING_LIB=-Llogging -llogging
+
 DEFINES := 
-INCLUDE := -Iinclude $(MINIGUI_INCLUDE) 
+INCLUDE := -Iinclude $(MINIGUI_INCLUDE) $(LOGGING_INCLUDE)
 
 CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
 LDFLAGS := -pthread
 #-lts
-LIBS    := $(MINIGUI_LIB) -lpng -ljpeg -ldl
+LIBS    := $(LOGGING_LIB) $(MINIGUI_LIB) -lpng -ljpeg -ldl
 
 SOURCE  := $(wildcard src/*.cpp)
 OBJS    := $(patsubst %.cpp, %.o, $(SOURCE))
 
+LOGGING = liblogging.a
 TARGET := gui
 
 .PHONY : all objs clean rebuild
@@ -32,6 +36,10 @@ rebuild : clean all
 clean:
 	@rm -rf src/*.o
 	@rm -rf $(TARGET)
+	make -C ./logging clean
 
-$(TARGET) : $(OBJS)
+$(TARGET) : $(OBJS) $(LOGGING)
 	$(C++) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+
+$(LOGGING):
+	make -C ./logging

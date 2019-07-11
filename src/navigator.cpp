@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include "navigator.h"
 #include "navigatorres.h"
+#include "logging.h"
 
 #define DEFAULT_TAB_HEIGHT  48
 
@@ -50,25 +51,47 @@ int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
 int Navigator::onCreate(WPARAM wParam, LPARAM lParam)
 {
     bool succeed;
-    RECT rc;    
+    RECT rc, rcTab, rcPage;    
     NavigatorPage *activatePage;
         
     if (!getClientRect(&rc))
         return -1;
-
+    else
+        logging_trace("Client size %d, %d, %d, %d.\r\n", rc.left, rc.top, rc.right, rc.bottom);
+    
     assert(m_nvgtTab == NULL);
+
+    rcTab.top = 5;
+    rcTab.left = 5;
+    rcTab.right = rc.right - 5;
+    rcTab.bottom = DEFAULT_TAB_HEIGHT - 5;
+    
     m_nvgtTab = new NavigatorTab;
-    succeed = m_nvgtTab->createWindow(IDC_NAVIGATOR_TAB, 0, 0, rc.right, DEFAULT_TAB_HEIGHT, getHandle());
+    succeed = m_nvgtTab->createWindow(IDC_NAVIGATOR_TAB,  rcTab.left, rcTab.top, rcTab.right - rcTab.left, rcTab.bottom - rcTab.top, getHandle());
     if (!succeed)
         return -1;
+    else
+    {
+        logging_trace("Succeed to create \"NavigatorTab\" @(%d, %d, %d, %d)\r\n",
+            rcTab.left, rcTab.top, rcTab.right, rcTab.bottom);
+    }
     
-
+    rcPage.left = 5;
+    rcPage.top = DEFAULT_TAB_HEIGHT + 5;
+    rcPage.right = rc.right - 5;
+    rcPage.bottom = rc.bottom - 5;
+    
     activatePage = *m_ActivatePageIterator;
     if (activatePage)
     {
-        succeed = activatePage->createWindow(IDC_NAVIGATOR_PAGE2, 0, DEFAULT_TAB_HEIGHT+1, rc.right, rc.bottom - DEFAULT_TAB_HEIGHT - 1, getHandle());
+        succeed = activatePage->createWindow(IDC_NAVIGATOR_PAGE2, rcPage.left, rcPage.top, rcPage.right - rcPage.left, rcPage.bottom - rcPage.top, getHandle());
         if (!succeed)
             return -1;
+        else
+        {
+            logging_trace("Succeed to create \"NavigatorPage\" @(%d, %d, %d, %d)\r\n",
+                rcPage.left, rcPage.top, rcPage.right - rcPage.left, rcPage.bottom - rcPage.top);
+        }
     }
         
     return 0;

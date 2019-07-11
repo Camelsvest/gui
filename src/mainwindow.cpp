@@ -97,7 +97,7 @@ int MainWindow::onCreate(WPARAM wParam, LPARAM lParam)
                     IDC_MLEDIT, 0, 0, client.right, client.bottom-200, getHandle(), 0);
 
     m_nvgt = new Navigator;
-    m_nvgt->createWindow(IDC_NAVIGATOR, 0, client.bottom-199, client.right, client.bottom, getHandle());
+    m_nvgt->createWindow(IDC_NAVIGATOR, 0, client.bottom-199, client.right, 198, getHandle());
 
     return 0;
 }
