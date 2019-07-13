@@ -12,6 +12,9 @@ public:
 protected:
     virtual int onCreate(WPARAM wParam, LPARAM lParam);
     virtual int onDraw(HDC hdc);
+
+private:
+	int initSkins();
 };
 
 #endif

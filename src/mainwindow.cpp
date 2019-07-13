@@ -77,7 +77,7 @@ bool MainWindow::create()
 {
     return createMainWindow(STR_CAP, createMenu(), GetSystemCursor(0), 0, 
         WS_CAPTION | WS_BORDER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_SYSMENU,
-        WS_EX_IMECOMPOSE, 0, 0, 600, 480);
+        WS_EX_IMECOMPOSE, 0, 0, 800, 600);
 }    
 
 void MainWindow::run()
@@ -94,10 +94,10 @@ int MainWindow::onCreate(WPARAM wParam, LPARAM lParam)
     
     m_hMLEditWnd = CreateWindow ("medit", 
                      "",  WS_CHILD | WS_VISIBLE | WS_BORDER | WS_HSCROLL | WS_VSCROLL,
-                    IDC_MLEDIT, 0, 0, client.right, client.bottom-200, getHandle(), 0);
+                    IDC_MLEDIT, 0, 0, client.right, client.bottom-500, getHandle(), 0);
 
     m_nvgt = new Navigator;
-    m_nvgt->createWindow(IDC_NAVIGATOR, 0, client.bottom-199, client.right, 198, getHandle());
+    m_nvgt->createWindow(IDC_NAVIGATOR, 0, client.bottom-499, client.right, 499, getHandle());
 
     return 0;
 }

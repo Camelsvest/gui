@@ -16,6 +16,8 @@ bool GUI::init()
 {
     bool ret = false;
 
+    ::SetDefaultWindowElementRenderer("skin");
+
     if (m_pMainWindow == NULL)
     {
         m_pMainWindow = new MainWindow();

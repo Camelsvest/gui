@@ -23,6 +23,9 @@ public:
         DWORD dwStyle, DWORD dwExStyle, int id, int x, int y, int w, int  h,
         HWND hParentWnd);
 
+    HWND createSubWindow(const char *pszWndClassName, const char *pszCaption,
+        DWORD dwStyle, DWORD dwExStyle, int id, int x, int y, int w, int h, const char *pszTips);
+        
 	operator HWND() const
 	{
 		return m_hWnd;
@@ -37,7 +40,11 @@ public:
     bool showWindow();
 
     DWORD getWindowElementAttr(int weAttrId);
+	DWORD setWindowElementAttr(int weAttrId, DWORD weAttr);
+	
     WINDOW_ELEMENT_RENDERER* getWindowElementRender();
+
+	int sendMessage(int message, WPARAM wParam, LPARAM lParam);
 	
 protected:
 	bool getClientRect(RECT &rc);
@@ -50,6 +57,7 @@ protected:
 	virtual int onClose(WPARAM wParam, LPARAM lParam);
 	virtual int onMaximize(WPARAM wParam, LPARAM lParam);
     virtual int onShowWindow(WPARAM wPara, LPARAM lParam);
+	virtual int onEraseBkGnd(WPARAM wParam, LPARAM lParam);
 	virtual int onPaint(WPARAM wParam, LPARAM lParam);
 	virtual int onDraw(HDC hdc);
 	

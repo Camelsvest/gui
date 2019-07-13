@@ -16,9 +16,18 @@ protected:
     virtual int onCreate(WPARAM wParam, LPARAM lParam);
     virtual int onDraw(HDC hdc);
 
+	int initSkins();
+
+    void setButtonWndProc(HWND hButton);
+
+private:        
+    static int defaultButtonProc(HWND hwnd, int message, WPARAM wParam, LPARAM lParam);
+	
 protected:
     std::string m_title;
     HICON       m_icon;
+
+    static WNDPROC m_btnDefaultWndProc;
 };
 
 #endif

@@ -72,6 +72,13 @@ bool Wnd::createWindow(const char *pszWndClassName, const char *pszCaption,
     return (hWnd != HWND_INVALID);        
 }
 
+HWND Wnd::createSubWindow(const char *pszWndClassName, const char *pszCaption,
+    DWORD dwStyle, DWORD dwExStyle, int id, int x, int y, int w, int h, const char *pszTips)
+{
+    return ::CreateWindowEx(pszWndClassName, pszCaption, dwStyle, 
+        dwExStyle, id, x, y, w, h, m_hWnd, (DWORD)pszTips);
+}
+
 int	Wnd::messageBox(const char *pszText, const char *pszCaption, DWORD dwStyle)
 {
     return ::MessageBox(m_hWnd, pszText, pszCaption, dwStyle);
@@ -100,9 +107,19 @@ DWORD Wnd::getWindowElementAttr(int weAttrId)
     return ::GetWindowElementAttr(m_hWnd, weAttrId);
 }
 
+DWORD Wnd::setWindowElementAttr(int weAttrId, DWORD weAttr)
+{
+    return ::SetWindowElementAttr(m_hWnd, weAttrId, weAttr);
+}
+
 WINDOW_ELEMENT_RENDERER* Wnd::getWindowElementRender()
 {
     return ((WINDOWINFO*)GetWindowInfo(m_hWnd))->we_rdr;
+}
+
+int Wnd::sendMessage(int message, WPARAM wParam, LPARAM lParam)
+{
+    return ::SendMessage(m_hWnd, message, wParam, lParam);
 }
 
 bool Wnd::getClientRect(RECT &rc)
@@ -153,6 +170,10 @@ int Wnd::wndProc(int message, WPARAM wParam, LPARAM lParam)
         ret = onShowWindow(wParam, lParam);
         break;
 
+    case MSG_ERASEBKGND:
+        ret = onEraseBkGnd(wParam, lParam);
+        break;
+
     case MSG_PAINT:
         ret = onPaint(wParam, lParam);
         break;
@@ -185,6 +206,11 @@ int Wnd::onShowWindow(WPARAM wParam, LPARAM lParam)
 {
     assert(false);
     return -1;
+}
+
+int Wnd::onEraseBkGnd(WPARAM wParam, LPARAM lParam)
+{
+    return DefaultMainWinProc(m_hWnd, MSG_ERASEBKGND, wParam, lParam);
 }
 
 int Wnd::onPaint(WPARAM wParam, LPARAM lParam)
