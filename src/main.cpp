@@ -1,15 +1,14 @@
 #include "gui.h"
-#include "logging.h"
+//#include "logging.h"
 
 int MiniGUIMain(int argc, const char *argv[])
 {
 	GUI gui;
 
-    logging_init(NULL);
+    //logging_init(NULL);
 
 #ifdef _MGRM_PROCESSES
 	JoinLayer(NAME_DEF_LAYER, "GUI-DESKTOP", 0, 0);
-	LOG_PRINT("GUI-DESKTOP\r\n");
 #endif
 
 	if (gui.init())
@@ -17,7 +16,7 @@ int MiniGUIMain(int argc, const char *argv[])
 	
 	gui.uninit();
 
-    logging_uninit();
+    //logging_uninit();
     
 	return 0;
 }

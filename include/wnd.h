@@ -7,6 +7,8 @@
 #include <minigui/window.h>
 #include <minigui/control.h>
 
+#include <mgncs/mgncs.h>
+
 class Wnd {
 public:
 	Wnd();
@@ -45,13 +47,15 @@ public:
     WINDOW_ELEMENT_RENDERER* getWindowElementRender();
 
 	int sendMessage(int message, WPARAM wParam, LPARAM lParam);
-	
+private:
+    
+	static LRESULT wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    
 protected:
 	bool getClientRect(RECT &rc);
 	bool getClientRect(RECT *rc);
 	
-	static int wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam);
-	virtual int wndProc(int message, WPARAM wParam, LPARAM lParam);
+	virtual int wndProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 	virtual int onCreate(WPARAM wParam, LPARAM lParam) = 0;
 	virtual int onClose(WPARAM wParam, LPARAM lParam);
@@ -63,7 +67,6 @@ protected:
 	
 private:
 	HWND	m_hWnd;
-
 };
 
 #endif

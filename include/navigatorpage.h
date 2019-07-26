@@ -21,7 +21,7 @@ protected:
     void setButtonWndProc(HWND hButton);
 
 private:        
-    static int defaultButtonProc(HWND hwnd, int message, WPARAM wParam, LPARAM lParam);
+    static LRESULT defaultButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	
 protected:
     std::string m_title;

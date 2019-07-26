@@ -45,7 +45,7 @@ int NavigatorPage::initSkins()
     return 0;
 }
 
-int NavigatorPage::defaultButtonProc(HWND hwnd, int message, WPARAM wParam, LPARAM lParam)
+LRESULT NavigatorPage::defaultButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {

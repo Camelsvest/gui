@@ -57,6 +57,7 @@ bool Wnd::createMainWindow(const char *pszCaption, HMENU hMenu,
         hMainWnd = ::CreateMainWindow(&CreateInfo);    // m_hMainWnd shall be assigned in mainWindowProc
 
         ret = (hMainWnd != HWND_INVALID);
+
     }
 
     return ret;    
@@ -132,7 +133,7 @@ bool Wnd::getClientRect(RECT *rc)
     return (::GetClientRect(m_hWnd, rc) == TRUE);
 }
 
-int Wnd::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
+LRESULT Wnd::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     Wnd *pThis;
 
@@ -148,7 +149,7 @@ int Wnd::wndProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
     return -1;
 }
 
-int Wnd::wndProc(int message, WPARAM wParam, LPARAM lParam)
+int Wnd::wndProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
     int ret = 0;
     
