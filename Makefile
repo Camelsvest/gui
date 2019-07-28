@@ -4,6 +4,9 @@ AR  := ar
 MINIGUI_INCLUDE=-I/usr/local/include/minigui
 MINIGUI_LIB=-L/usr/local/lib -lminigui_ths -lmgncs
 
+LIBVDPSKIN=libvdpskin.a
+VDPSKIN_LIB=-Lvdpskin -lvdpskin
+
 LOGGING_INCLUDE=-Ilogging
 LOGGING_LIB= -Llogging -llogging
 
@@ -14,7 +17,7 @@ CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
 LDFLAGS := -pthread
 #-lts
-LIBS    := $(LOGGING_LIB) $(MINIGUI_LIB) -lpng -ljpeg -lm -ldl -lfreetype
+LIBS    := $(LOGGING_LIB) $(VDPSKIN_LIB) $(MINIGUI_LIB) -lpng -ljpeg -lm -ldl -lfreetype
 
 
 SOURCE  := $(wildcard src/*.cpp)
@@ -37,7 +40,8 @@ rebuild : clean all
 clean:
 	@rm -rf src/*.o
 	@rm -rf $(TARGET)
-	#make -C ./logging clean
+	make -C ./logging clean
+	make -C ./vdpskin clean
 
 $(TARGET) : $(OBJS) $(LOGGING) $(LIBVDPSKIN) 
 	$(C++) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
