@@ -5,7 +5,7 @@ MINIGUI_INCLUDE=-I/usr/local/include/minigui
 MINIGUI_LIB=-L/usr/local/lib -lminigui_ths -lmgncs
 
 LOGGING_INCLUDE=-Ilogging
-LOGGING_LIB= #-Llogging -llogging
+LOGGING_LIB= -Llogging -llogging
 
 DEFINES := 
 INCLUDE := -Iinclude $(MINIGUI_INCLUDE) $(LOGGING_INCLUDE)
@@ -14,12 +14,13 @@ CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
 LDFLAGS := -pthread
 #-lts
-LIBS    := $(LOGGING_LIB) $(MINIGUI_LIB) -lts -lpng -ljpeg -lm -ldl -lfreetype
+LIBS    := $(LOGGING_LIB) $(MINIGUI_LIB) -lpng -ljpeg -lm -ldl -lfreetype
+
 
 SOURCE  := $(wildcard src/*.cpp)
 OBJS    := $(patsubst %.cpp, %.o, $(SOURCE))
 
-LOGGING = #liblogging.a
+LOGGING = liblogging.a
 TARGET := gui
 
 .PHONY : all objs clean rebuild
@@ -38,8 +39,11 @@ clean:
 	@rm -rf $(TARGET)
 	#make -C ./logging clean
 
-$(TARGET) : $(OBJS) $(LOGGING)
+$(TARGET) : $(OBJS) $(LOGGING) $(LIBVDPSKIN) 
 	$(C++) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
 
 $(LOGGING):
 	make -C ./logging
+
+$(LIBVDPSKIN):
+	make -C ./vdpskin
