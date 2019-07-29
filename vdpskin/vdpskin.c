@@ -50,28 +50,39 @@ extern mPropSheetRenderer vdpskin_propsheet_renderer;
 #define RDR_ENTRY(CLASSNAME, classname) \
 	{ NCSCTRL_##CLASSNAME, (mWidgetRenderer*)(void*)(&(vdpskin_##classname##_renderer))}
 
+
+NCS_RDR_ENTRY ncs_rdr_entries [] = {
+    RDR_ENTRY(WIDGET,widget),
+    RDR_ENTRY(STATIC,widget),
+#ifdef _MGNCSCTRL_PROPSHEET
+    RDR_ENTRY(PROPSHEET, propsheet),
+#endif
+};
+
 BOOL ncsInitVDPSkinRenderers(void)
 {
-	int i;
-	NCS_RDR_ENTRY entries [] = {
-		RDR_ENTRY(WIDGET,widget),
-		RDR_ENTRY(STATIC,widget),
-#ifdef _MGNCSCTRL_PROPSHEET
-		RDR_ENTRY(PROPSHEET, propsheet),
-#endif
-	};
+    int i;
 
-	for(i=0; i< sizeof(entries)/sizeof(NCS_RDR_ENTRY); i++)
-	{
-		entries[i].renderer->class_init(entries[i].renderer);
-		if(entries[i].renderer->init_self)
-			entries[i].renderer->init_self(entries[i].renderer);
-	}
+    for(i=0; i< sizeof(ncs_rdr_entries)/sizeof(NCS_RDR_ENTRY); i++)
+    {
+        ncs_rdr_entries[i].renderer->class_init(ncs_rdr_entries[i].renderer);
+	if(ncs_rdr_entries[i].renderer->init_self)
+		ncs_rdr_entries[i].renderer->init_self(ncs_rdr_entries[i].renderer);
+    }
 
-	return ncsRegisterCtrlRDRs("vdpskin", entries,
-            sizeof(entries)/sizeof(NCS_RDR_ENTRY));
+    return ncsRegisterCtrlRDRs("vdpskin", ncs_rdr_entries,
+            sizeof(ncs_rdr_entries)/sizeof(NCS_RDR_ENTRY));
 }
 
+void ncsUninitVDPSkinRenderers()
+{
+    int i;
+    for (i = 0; i < sizeof(ncs_rdr_entries)/sizeof(NCS_RDR_ENTRY); i++)
+    {
+        ncsUnregisterCtrlRDRs("vdpskin", ncs_rdr_entries[i].className);
+    }
+    return;
+}
 
 static PBITMAP get_sub_bitmap (const DRAWINFO *di)
 {

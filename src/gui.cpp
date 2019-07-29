@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "gui.h"
+#include "vdpskin.h"
 #include "logging.h"
 
 GUI::GUI()
@@ -14,12 +15,14 @@ GUI::~GUI()
 }
 
 bool GUI::init()
-{
+{
     bool ret = false;
-	
-    ::SetDefaultWindowElementRenderer("skin");
-	fprintf(stdout, "%s %s->ncsInitialize is invoked\r\n", __FILE__, __FUNCTION__);
-	::ncsInitialize ();
+             
+    ::ncsInitialize ();
+    ::ncsInitVDPSkinRenderers();
+
+    //    ::SetDefaultWindowElementRenderer("skin");
+    
     if (m_pMainWindow == NULL)
     {
 #ifndef USE_MNCS		
@@ -36,7 +39,7 @@ bool GUI::init()
 
 int GUI::run()
 {
-	if (m_pMainWindow)
+    if (m_pMainWindow)
     {
         m_pMainWindow->run();
         return 0;
@@ -47,16 +50,15 @@ int GUI::run()
 
 void GUI::uninit()
 {
-	fprintf(stdout, "%s %s->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__);
     if (m_pMainWindow)
     {
         ::MainWindowThreadCleanup((HWND)m_pMainWindow);
         
         delete m_pMainWindow;
         m_pMainWindow = NULL;
-		fprintf(stdout, "%s %s->ncsUninitialize is invoked\r\n", __FILE__, __FUNCTION__);
-		::ncsUninitialize ();
-		
+
+	logging_trace("ncsUninitialize is invoked\r\n");
+	::ncsUninitialize ();	
     }
-	fprintf(stdout, "%s %s->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__);
+
 }

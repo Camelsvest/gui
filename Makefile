@@ -5,13 +5,14 @@ MINIGUI_INCLUDE=-I/usr/local/include/minigui
 MINIGUI_LIB=-L/usr/local/lib -lminigui_ths -lmgncs
 
 LIBVDPSKIN=libvdpskin.a
+VDPSKIN_INCLUDE=-I./vdpskin
 VDPSKIN_LIB=-Lvdpskin -lvdpskin
 
 LOGGING_INCLUDE=-Ilogging
 LOGGING_LIB= -Llogging -llogging
 
-DEFINES := 
-INCLUDE := -Iinclude $(MINIGUI_INCLUDE) $(LOGGING_INCLUDE)
+DEFINES := -D_MGNCS_RDR_SKIN
+INCLUDE := -Iinclude $(VDPSKIN_INCLUDE) $(MINIGUI_INCLUDE) $(LOGGING_INCLUDE)
 
 CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
