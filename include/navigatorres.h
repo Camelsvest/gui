@@ -1,6 +1,7 @@
 #ifndef _NAVIGATOR_RES_H_
 #define _NAVIGATOR_RES_H_
 
+#define IDC_MAINWND     100
 #define IDC_MLEDIT      104
 #define IDC_NAVIGATOR   105
 #define IDC_NAVIGATOR_TAB	106

@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "gui.h"
 #include "vdpskin.h"
-#include "logging.h"
+#include "trace.h"
 
 GUI::GUI()
 	: m_pMainWindow(NULL)
@@ -11,7 +11,7 @@ GUI::GUI()
 GUI::~GUI()
 {
 	if (m_pMainWindow)
-		delete m_pMainWindow;
+	    m_pMainWindow->release();
 }
 
 bool GUI::init()
@@ -25,13 +25,8 @@ bool GUI::init()
     
     if (m_pMainWindow == NULL)
     {
-#ifndef USE_MNCS		
-        m_pMainWindow = new MainWindow();
-        ret = m_pMainWindow->create();
-#else
         m_pMainWindow = MainWindow::getInstance();
         ret = m_pMainWindow->ncscreate();
-#endif
     }
 
     return ret;
@@ -52,13 +47,13 @@ void GUI::uninit()
 {
     if (m_pMainWindow)
     {
-        ::MainWindowThreadCleanup((HWND)m_pMainWindow);
+        ::MainWindowThreadCleanup(m_pMainWindow->handle());
         
-        delete m_pMainWindow;
+        m_pMainWindow->release();
         m_pMainWindow = NULL;
 
-	logging_trace("ncsUninitialize is invoked\r\n");
-	::ncsUninitialize ();	
+    	logging_trace("ncsUninitialize is invoked\r\n");
+    	::ncsUninitialize ();	
     }
 
 }

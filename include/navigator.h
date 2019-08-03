@@ -7,7 +7,7 @@
 
 #define MSG_NVGT_BASEINDEX	(MSG_USER + 1000)
 
-#define IDC_PROPSHEET 100
+
 #define IDC_SYSINFO     101
 #define IDC_REFRESH     102
 
@@ -33,36 +33,40 @@
 
 #define CTRL_NAVIGATOR  ("NVGTCTRL")
 
-class Navigator : public CtrlWnd {
+class Navigator      {
 
 public:
-    Navigator();    
-    Navigator(mMainWnd* mainwnd);
-    
+    Navigator();
     virtual ~Navigator();
     
-	bool addPage(NavigatorPage *page, bool activated = true);
-	bool delPage(NavigatorPage *page);
+	bool createWindow(HWND hMainWnd, RECT *rc);
     
-	
 protected:
-	virtual int wndProc(int message, WPARAM wParam, LPARAM lParam);
-    virtual int onCreate(WPARAM wParam, LPARAM lParam);
-
 	int onInitSkin(WPARAM wParam, LPARAM lParam);
 
+    static void page_onInitPage(mWidget* self, DWORD add_data);
+    static int page_onShowPage(mWidget* self, HWND hwnd, int show_cmd);
+    static int page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam);
+
 private:
+    void onInitPage(mWidget* self, int pageType);
+    
 	bool registerAllPictures();
 	void unregisterAllPictures();
     
-private:
-	NavigatorTab *m_nvgtTab;
-	
-	typedef std::list<NavigatorPage *> NvgtPageList;
-	NvgtPageList			m_nvgtPageList;
-	NvgtPageList::iterator	m_ActivatePageIterator;
-    
+private:   
     mPropSheet *m_propsheet;
+
+    static NCS_EVENT_HANDLER m_pageHandlers[];
+
+    typedef struct _mPageData
+    {
+        Navigator   *pThis;
+        DWORD       data;
+    } mPageData;
+
+	BITMAP m_bmpAudioMemo;   
+
 };
 
 #endif

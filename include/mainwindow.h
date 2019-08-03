@@ -4,17 +4,11 @@
 #include "wnd.h"
 #include "navigator.h"
 
-#define USE_MNCS
-
-class MainWindow : public Wnd {
+class MainWindow {
 public:
-	MainWindow();
-	virtual ~MainWindow();
     static MainWindow* getInstance();
-    Navigator * getM_nvgt();
-    void        setM_nvgt(Navigator* nvgt);
-    mWidget*    getMwidget();
-	bool create();
+    static void release();
+    
     bool ncscreate();
     bool ncscreateMainWindow(const char *pszCaption, HMENU hMenu,
         HCURSOR hCursor, HICON hIcon, DWORD dwStyle, DWORD dwExStyle,
@@ -22,11 +16,17 @@ public:
     
     void ncsshowWindow();
     void run();
+
+    HWND handle() { return m_hMainWnd; }
     
-protected:
-	int onCreate(WPARAM wParam, LPARAM lParam);
-	int onShowWindow(WPARAM wParam, LPARAM lParam);
-    int onClose(WPARAM wParam, LPARAM lParam);
+protected:   
+	MainWindow();
+	virtual ~MainWindow();
+
+    BOOL onCreate(HWND hParent);
+
+    static BOOL main_onCreate(mWidget* self, DWORD dwAddData );
+    static BOOL main_onClose(mWidget* self, int message);
 
 private:
     HMENU createMenu();
@@ -35,13 +35,12 @@ private:
     
     
 private:
+    Navigator m_Navigator;
+    
+    HWND m_hMainWnd;
     static MainWindow* m_pInstance;
-    HWND	m_hMainWnd;
-	HWND 	m_hMLEditWnd;
+    static NCS_EVENT_HANDLER m_mainHandlers[];
 
-    mWidget* m_wMainWnd;
-	Navigator *m_nvgt;
-	
 };
 
 
