@@ -1,7 +1,6 @@
 #ifndef _MAINWINDOW_H_
 #define _MAINWINDOW_H_
 
-#include "wnd.h"
 #include "navigator.h"
 
 class MainWindow {

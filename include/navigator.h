@@ -1,9 +1,14 @@
 #ifndef _NAVIGATOR_H_
 #define _NAVIGATOR_H_
 
-#include <list>
-#include "navigatorpage.h"
-#include "navigatortab.h"
+#include <minigui/common.h>
+#include <minigui/minigui.h>
+#include <minigui/gdi.h>
+#include <minigui/window.h>
+#include <minigui/control.h>
+
+#include <mgncs/mgncs.h>
+
 
 #define MSG_NVGT_BASEINDEX	(MSG_USER + 1000)
 

@@ -6,7 +6,6 @@
 #include "navigator.h"
 #include "navigatorres.h"
 #include "navigatorskin.h"
-#include "navigatorhomepage.h"
 #include "trace.h"
 
 
