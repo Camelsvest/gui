@@ -67,6 +67,7 @@ private:
     {
         Navigator   *pThis;
         DWORD       data;
+        BITMAP               
     } mPageData;
 
 	BITMAP m_bmpAudioMemo;   
