@@ -6,8 +6,7 @@
 #include "navigator.h"
 #include "navigatorres.h"
 #include "navigatorskin.h"
-#include "navigatorhomepage.h"
-#include "logging.h"
+#include "trace.h"
 
 
 #define DEFAULT_TAB_HEIGHT  48
@@ -20,7 +19,7 @@ static NCS_RDR_INFO spin_rdr_info[] =
 	
 static NCS_RDR_INFO prop_rdr_info[] =
 {
-    {"skin", "skin", NULL},
+    {"classic", "vdpskin", NULL},
 };
 
 static DLGTEMPLATE PageSysInfo =
@@ -314,316 +313,203 @@ static NCS_WND_TEMPLATE page_five[] = {
 	},
 };
 
-static char *nvgtAllPictures[] = 
+
+NCS_EVENT_HANDLER Navigator::m_pageHandlers[] =
 {
-    NAVIGATOR_SKIN_TAB_BG,
-    NAVIGATOR_SKIN_PAGE_BG,
-    NAVIGATOR_SKIN_HOME_PAGE_BG,
-    NAVIGATOR_SKIN_HOME_PAGE_BTN_AUDIOMEMO
+	{MSG_INITPAGE,  reinterpret_cast<void*>(Navigator::page_onInitPage)},
+	{MSG_SHOWPAGE,  reinterpret_cast<void*>(Navigator::page_onShowPage)},
+	{MSG_SHEETCMD,  reinterpret_cast<void*>(Navigator::page_onSheetCmd)},
+	{MSG_DESTROY,   reinterpret_cast<void*>(Navigator::page_onDestroy)},
+	{0 , NULL }
 };
 
-static void page_onInitPage(mWidget* self, DWORD add_data)
+Navigator::Navigator()
+    : m_propsheet(NULL)
 {
-	mPage* page;
+}
+
+Navigator::~Navigator()
+{
+}
+
+bool Navigator::createWindow(HWND hParent, RECT *rc)
+{    
+    mPageData *pageData;
+    
+    bool ret = false;
+    
+	m_propsheet =(mPropSheet*) ncsCreateWindow (
+        NCSCTRL_PROPSHEET,
+        "Navigator",     // caption
+        WS_VISIBLE | NCSS_PRPSHT_SCROLLABLE, WS_EX_NONE,
+        IDC_NAVIGATOR,
+        rc->left, rc->top, rc->right, rc->bottom,
+        hParent,
+        NULL,           // NCS_PROP_ENTRY * props,
+        prop_rdr_info,  // NCS_RDR_INFO * rdr_info,
+        NULL,           // NCS_EVENT_HANDLER * handlers,
+        0);
+
+	if (!m_propsheet)
+    {
+        logging_error("Failed to create mPropsheet.\r\n");		
+	}
+    else
+    {
+		logging_trace("Succeed to create mPropsheet\r\n");
+        
+		PageSysInfo.controls = CtrlSysInfo;
+
+		PageSysInfo.caption = "First Page";
+        pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);
+        pageData->pThis = this;
+        pageData->data = PAGE_FIRST;
+	    PageSysInfo.dwAddData = (DWORD)pageData;
+	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+
+	    PageSysInfo.caption = "Second Page";
+        pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);
+        pageData->pThis = this;
+        pageData->data = PAGE_SECOND;
+	    PageSysInfo.dwAddData = (DWORD)pageData;
+	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+
+	    PageSysInfo.caption = "Third Page";
+        pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);        
+        pageData->pThis = this;
+        pageData->data = PAGE_THIRD;
+	    PageSysInfo.dwAddData = (DWORD)pageData;
+	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+
+	    PageSysInfo.caption = "Four Page";
+        pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);        
+        pageData->pThis = this;
+        pageData->data = PAGE_FOUR;
+	    PageSysInfo.dwAddData = (DWORD)pageData;        
+ 	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+
+	    PageSysInfo.caption = "Five Page";
+        pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);        
+        pageData->pThis = this;
+        pageData->data = PAGE_FIVE;
+	    PageSysInfo.dwAddData = (DWORD)pageData;        
+	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+
+		_c(m_propsheet)->setProperty(m_propsheet, NCSP_PRPSHT_TABMARGIN, 8);
+
+        ret = true;
+	}
+
+    return ret;
+                       
+}
+
+void Navigator::onInitPage(mWidget* self,int pageType)
+{
 	mButton* mb;
-	BITMAP bmp;
-	int type;
-	HWND hwnd;
-	
-	fprintf (stdout, "%s %s %d->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
 
-	page = (mPage*)self;
+	ENTER_CLASS_FUNCTION("Navigator");
 
-	type = (int)GetWindowAdditionalData(page->hwnd);
-	//hwnd = GetDlgItem(_c(page)->getPanel(page), IDC_SYSINFO)
-
-	switch(type){
+	switch(pageType){
 
 		case PAGE_FIRST:
 			_c(self)->addChildren(self, page_first, \
 				sizeof(page_first)/sizeof(NCS_WND_TEMPLATE));
 			
-			if (LoadBitmapFromFile(HDC_SCREEN, &bmp, nvgtAllPictures[3]) != 0)				
-				fprintf(stdout, "%s %s %d-> can not load bitmap\r\n", __FILE__, __FUNCTION__, __LINE__);
+			if (LoadBitmapFromFile(HDC_SCREEN, &m_bmpAudioMemo, NAVIGATOR_SKIN_HOME_PAGE_BTN_AUDIOMEMO) != 0)				
+				logging_error("%s:%u %s Can\'t load bitmap\r\n", __FILE__, __LINE__, __FUNCTION__);
 			
 			mb = (mButton*)ncsGetChildObj(self->hwnd, ID_BUTTON_0);
-			if(mb){
-				_c(mb)->setProperty(mb, NCSP_BUTTON_IMAGE, (DWORD)&bmp);
-				fprintf(stdout, "%s %s %d-> setProperty\r\n", __FILE__, __FUNCTION__, __LINE__);
+			if(mb)
+            {
+				_c(mb)->setProperty(mb, NCSP_BUTTON_IMAGE, (DWORD)&m_bmpAudioMemo);
+				logging_trace("%s:%u %s setProperty\r\n", __FILE__, __LINE__, __FUNCTION__);
 			}
 			break;
+            
 		case PAGE_SECOND:
 			_c(self)->addChildren(self, page_second, \
 				sizeof(page_second)/sizeof(NCS_WND_TEMPLATE));
 			break;
+            
 		case PAGE_THIRD:
 			_c(self)->addChildren(self, page_third, \
 				sizeof(page_third)/sizeof(NCS_WND_TEMPLATE));
 			break;
+            
 		case PAGE_FOUR:
 			_c(self)->addChildren(self, page_four, \
 				sizeof(page_four)/sizeof(NCS_WND_TEMPLATE));
 			break;
+            
 		case PAGE_FIVE:
 			_c(self)->addChildren(self, page_five, \
 				sizeof(page_five)/sizeof(NCS_WND_TEMPLATE));
+            break;
+                
 		default:
-			fprintf (stdout, "%s %s %d-> Have no type for propsheet\r\n", __FILE__, __FUNCTION__, __LINE__);
-
-	
+			logging_error("%s:%u %s Haven\'t type for propsheet\r\n", __FILE__, __LINE__, __FUNCTION__);
+            break;	
 	}
-		
-	
-	fprintf (stdout, "%s %s %d->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
+
+	EXIT_CLASS_FUNCTION("Navigator");
+
+    return;
 }
 
-static int page_onShowPage(mWidget* self, HWND hwnd, int show_cmd)
+void Navigator::page_onInitPage(mWidget* self, DWORD add_data)
+{
+    Navigator *pThis;
+    mPageData *pageData;
+
+	
+	ENTER_CLASS_FUNCTION("Navigator");
+
+    pageData = (mPageData *)add_data;
+   
+    pThis = pageData->pThis;
+    pThis->onInitPage(self, pageData->data);
+	
+	EXIT_CLASS_FUNCTION("Navigator");
+}
+
+int Navigator::page_onShowPage(mWidget* self, HWND hwnd, int show_cmd)
 {
 	
-	fprintf (stdout, "%s %s %d->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
+	ENTER_CLASS_FUNCTION("Navigator");
 	
-	fprintf (stdout, "%s %s %d->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
+	EXIT_CLASS_FUNCTION("Navigator")
 
     return 1;
 }
 
-static int page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
+int Navigator::page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
 {
 	
-	fprintf (stdout, "%s %s %d->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
+	ENTER_CLASS_FUNCTION("Navigator");
     if (wParam == IDC_REFRESH) {
        
     }
 	
-	fprintf (stdout, "%s %s %d->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
+	EXIT_CLASS_FUNCTION("Navigator")
     return 0;
 }
 
-
-static NCS_EVENT_HANDLER page_handlers[] =
+void Navigator::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
 {
-	{MSG_INITPAGE, reinterpret_cast<void*>(page_onInitPage)},
-	{MSG_SHOWPAGE, reinterpret_cast<void*>(page_onShowPage)},
-	{MSG_SHEETCMD, reinterpret_cast<void*>(page_onSheetCmd)},
-	{0 , NULL }
-};
-
-Navigator::Navigator()
-    : CtrlWnd(CTRL_NAVIGATOR)
-    , m_nvgtTab(NULL)
-    , m_ActivatePageIterator(m_nvgtPageList.end())
-{
-    NavigatorPage *page;
-
-    if (!registerAllPictures())
-        throw new std::invalid_argument("Failed to register all pictures.");
-
-    page = new NavigatorPage("Page1", 0);
-    if (page == NULL)
-        throw new std::runtime_error("Failed to allocate memory for NavigatorPage: Page1.");
-    addPage(page);
+    mPageData *pageData;
     
-    page = new NavigatorHomePage("Page2", 0);
-    if (page == NULL)
-        throw new std::runtime_error("Failed to allocate memory for NavigatorPage: Page2.");
-
-    addPage(page, true);
-
-}
-
-Navigator::Navigator(mMainWnd* mainwnd)
-:CtrlWnd(CTRL_NAVIGATOR){
-	
-	fprintf (stdout, "%s %s %d->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
-	if (!mainwnd)
-		return ;
-	
-	m_propsheet =(mPropSheet*) ncsCreateWindow (NCSCTRL_PROPSHEET,"", WS_VISIBLE | NCSS_PRPSHT_SCROLLABLE, WS_EX_NONE,
-                       IDC_PROPSHEET,
-                       0, 0, 490, 225, mainwnd->hwnd,
-                       NULL, prop_rdr_info, NULL, 0);
-
-	if (!m_propsheet){
-		fprintf (stdout, "%s %s %d-> ncs create propsheet failure\r\n", __FILE__, __FUNCTION__, __LINE__);
-		
-	}else{
-		fprintf (stdout, "%s %s %d-> ncs create propsheet succeed\r\n", __FILE__, __FUNCTION__, __LINE__);
-		PageSysInfo.controls = CtrlSysInfo;
-		PageSysInfo.caption = "First Page";
-	    PageSysInfo.dwAddData = PAGE_FIRST;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, page_handlers);
-
-	    PageSysInfo.caption = "Second Page";
-	    PageSysInfo.dwAddData = PAGE_SECOND;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, page_handlers);
-
-	    PageSysInfo.caption = "Third Page";
-	    PageSysInfo.dwAddData = PAGE_THIRD;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, page_handlers);
-
-	    PageSysInfo.caption = "Four Page";
-	    PageSysInfo.dwAddData = PAGE_FOUR;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, page_handlers);
-
-	    PageSysInfo.caption = "Five Page";
-	    PageSysInfo.dwAddData = PAGE_FIVE;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, page_handlers);
-
-		_c(m_propsheet)->setProperty(m_propsheet, NCSP_PRPSHT_TABMARGIN, 8);
-	}
-	fprintf (stdout, "%s %s %d->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__, __LINE__);
-}
-
-Navigator::~Navigator()
-{
-    NvgtPageList::iterator itera;
-    NavigatorPage *page;
-    
-    for (itera = m_nvgtPageList.begin(); itera != m_nvgtPageList.end(); itera++)
+    ENTER_CLASS_FUNCTION("Navigator");
+    pageData = (mPageData *)::GetWindowAdditionalData(self->hwnd);
+    if (pageData)
     {
-        page = *itera;
-        delete page;
+        logging_trace("free pageData: %p\n", pageData);
+        free(pageData);
     }
-    
-    unregisterAllPictures();
+    EXIT_CLASS_FUNCTION("Navigator");
 }
-
-int Navigator::wndProc(int message, WPARAM wParam, LPARAM lParam)
-{
-    int ret = 0;
-    
-    switch (message)
-    {
-    case MSG_CREATE:
-        ret = onCreate(wParam, lParam);
-        break;
-
-    case MSG_PAINT:
-        ret = onPaint(wParam, lParam);
-        break;
-
-    case MSG_INIT_SKIN:
-        ret = onInitSkin(wParam, lParam);
-        break;
-        
-    case MSG_NCPAINT:        
-    default:
-        ret = DefaultMainWinProc(getHandle(), message, wParam, lParam);
-        break;
-    }
-
-
-    return ret;    
-}
-
-int Navigator::onCreate(WPARAM wParam, LPARAM lParam)
-{
-    bool succeed;
-    RECT rc, rcTab, rcPage;    
-    NavigatorPage *activatePage;
-
-    if (!getClientRect(&rc))
-        return -1;
-    else
-        logging_trace("Client size %d, %d, %d, %d.\r\n", rc.left, rc.top, rc.right, rc.bottom);
-    
-    assert(m_nvgtTab == NULL);
-
-    rcTab.top = 5;
-    rcTab.left = 5;
-    rcTab.right = rc.right - 5;
-    rcTab.bottom = DEFAULT_TAB_HEIGHT - 5;
-    
-    m_nvgtTab = new NavigatorTab;
-    succeed = m_nvgtTab->createWindow(IDC_NAVIGATOR_TAB,  rcTab.left, rcTab.top, rcTab.right - rcTab.left, rcTab.bottom - rcTab.top, getHandle());
-    if (!succeed)
-        return -1;
-    else
-    {
-        logging_trace("Succeed to create \"NavigatorTab\" @(%d, %d, %d, %d)\r\n",
-            rcTab.left, rcTab.top, rcTab.right, rcTab.bottom);
-    }
-    
-    rcPage.left = 5;
-    rcPage.top = DEFAULT_TAB_HEIGHT + 5;
-    rcPage.right = rc.right - 5;
-    rcPage.bottom = rc.bottom - 5;
-    
-    activatePage = *m_ActivatePageIterator;
-    if (activatePage)
-    {
-        succeed = activatePage->createWindow(IDC_NAVIGATOR_PAGE2, rcPage.left, rcPage.top, rcPage.right - rcPage.left, rcPage.bottom - rcPage.top, getHandle());
-        if (!succeed)
-            return -1;
-        else
-        {
-            logging_trace("Succeed to create \"NavigatorPage\" @(%d, %d, %d, %d)\r\n",
-                rcPage.left, rcPage.top, rcPage.right - rcPage.left, rcPage.bottom - rcPage.top);
-        }
-    }
-
-    return sendMessage(MSG_INIT_SKIN, 0, 0);
-   
-}
-
-bool Navigator::addPage(NavigatorPage *page, bool activated)
-{
-    m_nvgtPageList.push_back(page);
-
-    if (!activated)
-        m_ActivatePageIterator = m_nvgtPageList.begin();
-    else
-        m_ActivatePageIterator = --m_nvgtPageList.end(); // current page is activated
-        
-    return true;
-}
-
-bool Navigator::delPage(NavigatorPage *page)
-{
-    m_nvgtPageList.remove(page);
-    return true;
-}
-
-bool Navigator::registerAllPictures()
-{
-    unsigned int i;
-    
-    bool ret = true;
-    
-    if (0 == ::SetResPath("./res/"))
-    {
-        for (i = 0; i < sizeof(nvgtAllPictures)/sizeof(nvgtAllPictures[0]); i++)
-        {
-            if (::RegisterResFromFile(HDC_SCREEN, nvgtAllPictures[i]) == FALSE)
-            {
-                logging_error("Failed to register resource: %s.\r\n", nvgtAllPictures[i]);
-                ret = false;
-                break;
-            }
-        }
-    }
-    else
-    {
-        logging_error("Failed to register path for resource files.\r\n");
-        ret = false;
-    }
-
-    return ret;
-}
-
-void Navigator::unregisterAllPictures()
-{
-    unsigned int i;
-
-    for (i = 0; i < sizeof(nvgtAllPictures)/sizeof(nvgtAllPictures[0]); i++)
-    {
-        ::UnregisterRes(nvgtAllPictures[i]);
-    }
-}
-
-int Navigator::onInitSkin(WPARAM wParam, LPARAM lParam)
-{
-    setWindowElementAttr(WE_LFSKIN_WND_BKGND, (DWORD)NAVIGATOR_SKIN_PAGE_BG);
-    return 0;
-}
-

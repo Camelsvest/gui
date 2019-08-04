@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 #include "navigatorres.h"
+#include "trace.h"
 
 #define STR_CAP             "Notebook"
 #define STR_FILE             "File"
@@ -62,215 +63,148 @@
 
 MainWindow* MainWindow::m_pInstance = NULL;
 
-
-static BOOL main_onCreate(mMainWnd* self, DWORD dwAddData );
-static BOOL main_onClose(mWidget* self, int message);
-static BOOL main_onDestroy(mWidget* self, int message);
-static BOOL main_onEraseBk(mWidget *self, HDC hdc, const PRECT clip);
-static BOOL main_onLbuttonDownHandler(mWidget *self, int message, int x, int y, DWORD keyStatus);
-static BOOL main_onLbuttonUpHandler(mWidget *self, int message, int x, int y, DWORD keyStatus);
-static BOOL main_onLbuttonDownHandler(mWidget *self, int message, int x, int y, DWORD keyStatus);
-
-
-static BOOL main_onCreate(mMainWnd* self, DWORD dwAddData )
-{
-	MainWindow *pMainWindow;
-	Navigator *nvgt;
-	
-	fprintf (stdout, "%s %s->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__);
-	
-	pMainWindow = MainWindow::getInstance();
-	
-	nvgt = new Navigator(self);
-	if (nvgt){
-		pMainWindow->setM_nvgt(nvgt);
-	}
-
-	fprintf (stdout, "%s %s->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__);
-	return true;
-}
-
-static BOOL main_onClose(mWidget* self, int message)
-{
-	return true;
-}
-
-static BOOL main_onDestroy(mWidget* self, int message)
-{
-	return true;
-}
-
-static BOOL main_onEraseBk(mWidget *self, HDC hdc, const PRECT clip){
-return true;
-}
-
-static BOOL main_onLbuttonDownHandler(mWidget *self, int message, int x, int y, DWORD keyStatus){
-	
-	fprintf (stdout, "%s %s->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__);
-
-	
-	fprintf (stdout, "%s %s->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__);
-	return true;
-}
-
-static BOOL main_onLbuttonUpHandler(mWidget *self, int message, int x, int y, DWORD keyStatus){
-return true;
-}
-
-static BOOL main_onMouseMoveHandler(mWidget *self, int message, int x, int y, DWORD keyStatus){
-return true;
-}
-
-static BOOL main_onPaint(mWidget* self, HDC hdc, const PCLIPRGN clipRgn){
-return true;
-}
-
-
-//if use mgncs4touch to SpeedMeterMessageHandler in MSG_LBUTTONDOWN,MSG_LBUTTONUP and MSG_MOUSEMOVE
-static NCS_EVENT_HANDLER main_handlers [] = {
-    {MSG_CREATE, reinterpret_cast<void*>(main_onCreate)},
-    {MSG_CLOSE, reinterpret_cast<void*>(main_onClose)},    
-    {MSG_DESTROY,     reinterpret_cast<void*>(main_onDestroy)},
-    //{MSG_LBUTTONDOWN, reinterpret_cast<void*>(main_onLbuttonDownHandler)}, 
-    {MSG_LBUTTONUP,   reinterpret_cast<void*>(main_onLbuttonUpHandler)},
-    {MSG_MOUSEMOVE,   reinterpret_cast<void*>(main_onMouseMoveHandler)},
-    {MSG_PAINT, reinterpret_cast<void*>(main_onPaint)},
-    {MSG_ERASEBKGND, reinterpret_cast<void*>(main_onEraseBk)},
+NCS_EVENT_HANDLER MainWindow::m_mainHandlers [] = {
+    {MSG_CREATE,        reinterpret_cast<void*>(MainWindow::main_onCreate)},
+    {MSG_CLOSE,         reinterpret_cast<void*>(MainWindow::main_onClose)},    
     {0, NULL}
 };
 
-
 MainWindow::MainWindow()
-    : m_hMLEditWnd(HWND_INVALID)
-    , m_nvgt(NULL)
+    : m_hMainWnd(HWND_INVALID)
 {
 }
 
 MainWindow::~MainWindow()
 {
-    if (m_nvgt)
-        delete m_nvgt;
 }
 
 MainWindow* MainWindow::getInstance()
 {
 	if (m_pInstance == NULL)
-		return new MainWindow();
+		m_pInstance = new MainWindow();
 
 	return m_pInstance;
 }
 
-Navigator* MainWindow::getM_nvgt(){
-	return m_nvgt;
-}
-
-void MainWindow::setM_nvgt(Navigator* nvgt){
-	m_nvgt = nvgt;
-}
-
-mWidget* MainWindow::getMwidget()
+void MainWindow::release()
 {
-	return m_wMainWnd;
+    if (m_pInstance)
+    {
+        delete m_pInstance;
+        m_pInstance = NULL;
+    }
 }
 
-
-bool MainWindow::create()
-{
-    return createMainWindow(STR_CAP, createMenu(), GetSystemCursor(0), 0, 
-        WS_CAPTION | WS_BORDER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_SYSMENU,
-        WS_EX_IMECOMPOSE, 0, 0, 800, 600);
-}    
-
-bool MainWindow::ncscreateMainWindow(const char *pszCaption, HMENU hMenu,
-	HCURSOR hCursor, HICON hIcon, DWORD dwStyle, DWORD dwExStyle,
-	int x, int y, int w, int  h){
-
-	    m_wMainWnd = ncsCreateMainWindow (
-        NCSCTRL_MAINWND, pszCaption,
+bool MainWindow::ncscreateMainWindow(
+                    const char *pszCaption, HMENU hMenu, HCURSOR hCursor,
+                    HICON hIcon, DWORD dwStyle, DWORD dwExStyle,
+                    int x, int y, int w, int  h) {
+    mWidget *widget;                
+    ENTER_CLASS_FUNCTION("MainWindow");
+    
+    widget = ::ncsCreateMainWindow (
+        NCSCTRL_MAINWND,
+        pszCaption,
         dwStyle,
         dwExStyle,
-        1, 
+        IDC_MAINWND, 
         x, y, w, h,
         HWND_DESKTOP,
-        0, 0,
+        hIcon, hMenu,
         NULL,
         NULL,
-        main_handlers,
-        0);
+        m_mainHandlers,
+        (DWORD)this);   // important !!!
 
-		if (m_wMainWnd != NULL)
-			return true;
-		else
-			return false;
+    EXIT_CLASS_FUNCTION("MainWindow");
+
+    if (widget != NULL)
+    {
+        m_hMainWnd = widget->hwnd;
+        logging_trace("Create MainWindow: %p\r\n", m_hMainWnd);
+        
+        return true;
+    }
+    else
+        return false;
+
 }
 
 bool MainWindow::ncscreate()
 {
-	return ncscreateMainWindow("main window", 0, GetSystemCursor(0), 0, 
+	return ncscreateMainWindow(
+        "MainWindow",  
+        createMenu(),
+        GetSystemCursor(0),
+        0, // hIcon
         WS_CAPTION | WS_BORDER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_SYSMENU,
-        WS_EX_IMECOMPOSE, 0, 0, 800, 600);
+        0,  // dwExStyle
+        0,
+        0,
+        800,
+        600);
 }
 
 void MainWindow::ncsshowWindow(){
 	MSG Msg;
-	fprintf(stdout, "%s %s->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__);
-	if (m_wMainWnd == NULL)
+
+    ENTER_CLASS_FUNCTION("MainWindow");
+	if (m_hMainWnd == NULL)
 		return;
 	
-	while (GetMessage (&Msg, m_wMainWnd->hwnd)) {
+	while (GetMessage (&Msg, m_hMainWnd)) {
         TranslateMessage (&Msg);
         DispatchMessage (&Msg);
     }
 
-	
-	fprintf(stdout, "%s %s->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__);
+    EXIT_CLASS_FUNCTION("MainWindow");
 }
 
 void MainWindow::run()
-{
-	
-	fprintf(stdout, "%s %s->ENTER FUNCTION\r\n", __FILE__, __FUNCTION__);
-#ifndef USE_MNCS
-    showWindow();
-#else
+{	
+	ENTER_CLASS_FUNCTION("MainWindow");
+    
 	ncsshowWindow();
-#endif
-	fprintf(stdout, "%s %s->EXIT FUNCTION\r\n", __FILE__, __FUNCTION__);
+
+    EXIT_CLASS_FUNCTION("MainWindow");
 
     return;
 }
 
-int MainWindow::onCreate(WPARAM wParam, LPARAM lParam)
-{
-    RECT client;
-    getClientRect(&client);
+BOOL MainWindow::main_onCreate(mWidget* self, DWORD dwAddData )
+{   
+    BOOL ret;
+    MainWindow *pThis;
     
-    m_hMLEditWnd = CreateWindow ("medit", 
-                     "",  WS_CHILD | WS_VISIBLE | WS_BORDER | WS_HSCROLL | WS_VSCROLL,
-                    IDC_MLEDIT, 0, 0, client.right, client.bottom-500, getHandle(), 0);
-
-    m_nvgt = new Navigator;
-    m_nvgt->createWindow(IDC_NAVIGATOR, 0, client.bottom-499, client.right, 499, getHandle());
-
-    return 0;
-}
-
-int MainWindow::onShowWindow(WPARAM wParam, LPARAM lParam)
-{
-    if (m_hMLEditWnd != HWND_INVALID)
-        SetFocus (m_hMLEditWnd);
+    ENTER_CLASS_FUNCTION("MainWindow");
     
-    return 0;
+	pThis = reinterpret_cast<MainWindow *>(dwAddData);
+	ret = pThis->onCreate(self->hwnd);
+    
+    EXIT_CLASS_FUNCTION("MainWindow");
+    
+	return ret;
 }
 
-int MainWindow::onClose(WPARAM wParam, LPARAM lParam)
+BOOL MainWindow::onCreate(HWND hWnd)
 {
-    if (IDYES == messageBox("Are you sure?", "Quit", MB_ICONQUESTION|MB_YESNO))
-        return Wnd::onClose(wParam, lParam);
-    else
-        return -1;
+    RECT rc;
+    GetClientRect(hWnd, &rc);
+
+    return m_Navigator.createWindow(hWnd, &rc) ? TRUE : FALSE;
 }
 
+BOOL MainWindow::main_onClose(mWidget* self, int message)
+{
+    ENTER_CLASS_FUNCTION("MainWindow");
+
+    ::DestroyMainWindow(self->hwnd);
+    ::PostQuitMessage(self->hwnd);
+
+    EXIT_CLASS_FUNCTION("MainWindow");
+    
+    return TRUE;    
+}
 
 HMENU MainWindow::createMenu()
 {

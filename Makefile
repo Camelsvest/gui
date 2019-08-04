@@ -33,8 +33,8 @@ all : $(TARGET)
 
 objs : $(OBJS)
 
-%o : %cpp
-	$(C++) $(CPPFLAGS) -c $<
+%.o : %.cpp
+	$(C++) $(CPPFLAGS) -c $< -o $@
 
 rebuild : clean all
 
