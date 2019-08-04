@@ -316,9 +316,10 @@ static NCS_WND_TEMPLATE page_five[] = {
 
 NCS_EVENT_HANDLER Navigator::m_pageHandlers[] =
 {
-	{MSG_INITPAGE, reinterpret_cast<void*>(Navigator::page_onInitPage)},
-	{MSG_SHOWPAGE, reinterpret_cast<void*>(Navigator::page_onShowPage)},
-	{MSG_SHEETCMD, reinterpret_cast<void*>(Navigator::page_onSheetCmd)},
+	{MSG_INITPAGE,  reinterpret_cast<void*>(Navigator::page_onInitPage)},
+	{MSG_SHOWPAGE,  reinterpret_cast<void*>(Navigator::page_onShowPage)},
+	{MSG_SHEETCMD,  reinterpret_cast<void*>(Navigator::page_onSheetCmd)},
+	{MSG_DESTROY,   reinterpret_cast<void*>(Navigator::page_onDestroy)},
 	{0 , NULL }
 };
 
@@ -361,6 +362,7 @@ bool Navigator::createWindow(HWND hParent, RECT *rc)
 
 		PageSysInfo.caption = "First Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);
         pageData->pThis = this;
         pageData->data = PAGE_FIRST;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
@@ -368,6 +370,7 @@ bool Navigator::createWindow(HWND hParent, RECT *rc)
 
 	    PageSysInfo.caption = "Second Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);
         pageData->pThis = this;
         pageData->data = PAGE_SECOND;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
@@ -375,20 +378,26 @@ bool Navigator::createWindow(HWND hParent, RECT *rc)
 
 	    PageSysInfo.caption = "Third Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);        
         pageData->pThis = this;
         pageData->data = PAGE_THIRD;
+	    PageSysInfo.dwAddData = (DWORD)pageData;
 	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
 
 	    PageSysInfo.caption = "Four Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);        
         pageData->pThis = this;
         pageData->data = PAGE_FOUR;
+	    PageSysInfo.dwAddData = (DWORD)pageData;        
  	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
 
 	    PageSysInfo.caption = "Five Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
+        logging_trace("Allocate pageData = %p\r\n", pageData);        
         pageData->pThis = this;
         pageData->data = PAGE_FIVE;
+	    PageSysInfo.dwAddData = (DWORD)pageData;        
 	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
 
 		_c(m_propsheet)->setProperty(m_propsheet, NCSP_PRPSHT_TABMARGIN, 8);
@@ -403,6 +412,8 @@ bool Navigator::createWindow(HWND hParent, RECT *rc)
 void Navigator::onInitPage(mWidget* self,int pageType)
 {
 	mButton* mb;
+
+	ENTER_CLASS_FUNCTION("Navigator");
 
 	switch(pageType){
 
@@ -445,7 +456,10 @@ void Navigator::onInitPage(mWidget* self,int pageType)
 			logging_error("%s:%u %s Haven\'t type for propsheet\r\n", __FILE__, __LINE__, __FUNCTION__);
             break;	
 	}
-		    
+
+	EXIT_CLASS_FUNCTION("Navigator");
+
+    return;
 }
 
 void Navigator::page_onInitPage(mWidget* self, DWORD add_data)
@@ -457,10 +471,11 @@ void Navigator::page_onInitPage(mWidget* self, DWORD add_data)
 	ENTER_CLASS_FUNCTION("Navigator");
 
     pageData = (mPageData *)add_data;
+   
     pThis = pageData->pThis;
     pThis->onInitPage(self, pageData->data);
 	
-	EXIT_CLASS_FUNCTION("Navigator")
+	EXIT_CLASS_FUNCTION("Navigator");
 }
 
 int Navigator::page_onShowPage(mWidget* self, HWND hwnd, int show_cmd)
@@ -483,4 +498,18 @@ int Navigator::page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
 	
 	EXIT_CLASS_FUNCTION("Navigator")
     return 0;
+}
+
+void Navigator::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
+{
+    mPageData *pageData;
+    
+    ENTER_CLASS_FUNCTION("Navigator");
+    pageData = (mPageData *)::GetWindowAdditionalData(self->hwnd);
+    if (pageData)
+    {
+        logging_trace("free pageData: %p\n", pageData);
+        free(pageData);
+    }
+    EXIT_CLASS_FUNCTION("Navigator");
 }
