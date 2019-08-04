@@ -19,7 +19,7 @@ static NCS_RDR_INFO spin_rdr_info[] =
 	
 static NCS_RDR_INFO prop_rdr_info[] =
 {
-    {"skin", "skin", NULL},
+    {"classic", "vdpskin", NULL},
 };
 
 static DLGTEMPLATE PageSysInfo =

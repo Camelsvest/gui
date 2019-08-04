@@ -52,7 +52,8 @@ void GUI::uninit()
         m_pMainWindow->release();
         m_pMainWindow = NULL;
 
-    	logging_trace("ncsUninitialize is invoked\r\n");
+        ::ncsUninitVDPSkinRenderers();
+    	logging_trace("ncsUninitialize is invoked\r\n");       
     	::ncsUninitialize ();	
     }
 

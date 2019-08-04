@@ -114,7 +114,7 @@ bool MainWindow::ncscreateMainWindow(
         NULL,
         NULL,
         m_mainHandlers,
-        (DWORD)this);
+        (DWORD)this);   // important !!!
 
     EXIT_CLASS_FUNCTION("MainWindow");
 

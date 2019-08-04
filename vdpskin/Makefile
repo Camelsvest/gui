@@ -21,7 +21,7 @@ all : $(TARGET)
 objs : $(SKINOBJS)
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
 rebuild: clean all
 
@@ -30,5 +30,5 @@ clean :
 	@rm $(TARGET)
   
 $(TARGET) : $(SKINOBJS)
-	$(AR) rsv $@ $(OBJS)
+	$(AR) rsv $@ $(SKINOBJS)
 

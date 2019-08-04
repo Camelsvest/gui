@@ -47,8 +47,6 @@ public:
 	bool createWindow(HWND hMainWnd, RECT *rc);
     
 protected:
-	int onInitSkin(WPARAM wParam, LPARAM lParam);
-
     static void page_onInitPage(mWidget* self, DWORD add_data);
     static int page_onShowPage(mWidget* self, HWND hwnd, int show_cmd);
     static int page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam);
