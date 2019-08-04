@@ -54,6 +54,8 @@ $(LIBVDPSKIN):
 	make -C ./vdpskin
 
 cscope:
-	find ./ -name "*.[hc]" > ./cscope.files
-	find ./ -name "*.cpp" >> ./cscope.files
-	cscope -bRqk
+	@find ./ -name "*.[hc]" > ./cscope.files
+	@find ./ -name "*.cpp" >> ./cscope.files
+	@cscope -bRqk
+	@echo "cscope.files has been updated!"
+	@echo ""
