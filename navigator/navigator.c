@@ -13,6 +13,38 @@
 /*for page handle*/
 #define IDC_PAGE    20
 
+BOOL RegisterNavigatorComponent()
+{
+    if(!ncsRegisterComponent(
+            (mComponentClass*)MGNCS_INIT_CLASS(mNavigatorPage), 
+            WS_HSCROLL | WS_VSCROLL,
+            WS_EX_NONE,
+            IDC_ARROW,
+            WE_MAINC_THREED_BODY))
+		return FALSE;
+    
+	if(!ncsRegisterComponent(	
+            (mComponentClass*)MGNCS_INIT_CLASS(mNavigator), 
+            WS_NONE,
+            WS_EX_NONE,
+            IDC_ARROW,
+            WE_MAINC_THREED_BODY))
+        return FALSE;
+
+    return TRUE;                
+}
+
+BOOL UnregisterNavigatorComponent()
+{
+    if (!UnregisterWindowClass(Class(mNavigatorPage).className))
+        return FALSE;
+
+    if (!UnregisterWindowClass(Class(mNavigator).className))
+        return FALSE;
+
+    return TRUE;
+}
+
 static void mNavigator_construct (mNavigator *self, DWORD addData)
 {
     RECT rcClient;
@@ -830,5 +862,3 @@ BEGIN_CMPT_CLASS(mNavigator, mWidget)
     CLASS_METHOD_MAP(mNavigator, addChildren)
 	SET_DLGCODE( DLGC_WANTTAB | DLGC_WANTARROWS)
 END_CMPT_CLASS
-
-

@@ -34,7 +34,7 @@ private:
     
     
 private:
-    Navigator m_Navigator;
+    NavigatorWindow m_Navigator;
     
     HWND m_hMainWnd;
     static MainWindow* m_pInstance;

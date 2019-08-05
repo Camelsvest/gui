@@ -1,5 +1,5 @@
-#ifndef _NAVIGATOR_H_
-#define _NAVIGATOR_H_
+#ifndef _NAVIGATOR_WINDOW_H_
+#define _NAVIGATOR_WINDOW_H_
 
 #include <minigui/common.h>
 #include <minigui/minigui.h>
@@ -38,11 +38,11 @@
 
 #define CTRL_NAVIGATOR  ("NVGTCTRL")
 
-class Navigator      {
+class NavigatorWindow      {
 
 public:
-    Navigator();
-    virtual ~Navigator();
+    NavigatorWindow();
+    virtual ~NavigatorWindow();
     
 	bool createWindow(HWND hMainWnd, RECT *rc);
     
@@ -65,7 +65,7 @@ private:
 
     typedef struct _mPageData
     {
-        Navigator   *pThis;
+        NavigatorWindow   *pThis;
         DWORD       data;           
     } mPageData;
 

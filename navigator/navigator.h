@@ -359,6 +359,12 @@ enum mNavigatorProp
 	NCSP_NVGTR_MAX
 };
 
+void test1();
+
+BOOL RegisterNavigatorComponent();
+BOOL UnregisterNavigatorComponent();
+BOOL InitNavigatorSkinRenderer();
+
     /** @} end of Control_Navigator */
 #ifdef __cplusplus
 }

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mainwindow.h"
+#include "navigator.h"
 #include "navigator_window.h"
 #include "navigatorres.h"
 #include "navigatorskin.h"
@@ -19,7 +20,7 @@ static NCS_RDR_INFO spin_rdr_info[] =
 	
 static NCS_RDR_INFO prop_rdr_info[] =
 {
-    {"classic", "vdpskin", NULL},
+    {"classic", "skin", NULL},
 };
 
 static DLGTEMPLATE PageSysInfo =
@@ -314,33 +315,36 @@ static NCS_WND_TEMPLATE page_five[] = {
 };
 
 
-NCS_EVENT_HANDLER Navigator::m_pageHandlers[] =
+NCS_EVENT_HANDLER NavigatorWindow::m_pageHandlers[] =
 {
-	{MSG_INITPAGE,  reinterpret_cast<void*>(Navigator::page_onInitPage)},
-	{MSG_SHOWPAGE,  reinterpret_cast<void*>(Navigator::page_onShowPage)},
-	{MSG_SHEETCMD,  reinterpret_cast<void*>(Navigator::page_onSheetCmd)},
-	{MSG_DESTROY,   reinterpret_cast<void*>(Navigator::page_onDestroy)},
+	{MSG_INITPAGE,  reinterpret_cast<void*>(NavigatorWindow::page_onInitPage)},
+	{MSG_SHOWPAGE,  reinterpret_cast<void*>(NavigatorWindow::page_onShowPage)},
+	{MSG_SHEETCMD,  reinterpret_cast<void*>(NavigatorWindow::page_onSheetCmd)},
+	{MSG_DESTROY,   reinterpret_cast<void*>(NavigatorWindow::page_onDestroy)},
 	{0 , NULL }
 };
 
-Navigator::Navigator()
+NavigatorWindow::NavigatorWindow()
     : m_propsheet(NULL)
 {
+    ::InitNavigatorSkinRenderer();
+    ::RegisterNavigatorComponent();
 }
 
-Navigator::~Navigator()
+NavigatorWindow::~NavigatorWindow()
 {
+    ::UnregisterNavigatorComponent();
 }
 
-bool Navigator::createWindow(HWND hParent, RECT *rc)
+bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
 {    
     mPageData *pageData;
     
     bool ret = false;
     
 	m_propsheet =(mPropSheet*) ncsCreateWindow (
-        NCSCTRL_PROPSHEET,
-        "Navigator",     // caption
+        NCSCTRL_NAVIGATOR,
+        "NavigatorWindow",     // caption
         WS_VISIBLE | NCSS_PRPSHT_SCROLLABLE, WS_EX_NONE,
         IDC_NAVIGATOR,
         rc->left, rc->top, rc->right, rc->bottom,
@@ -409,11 +413,11 @@ bool Navigator::createWindow(HWND hParent, RECT *rc)
                        
 }
 
-void Navigator::onInitPage(mWidget* self,int pageType)
+void NavigatorWindow::onInitPage(mWidget* self,int pageType)
 {
 	mButton* mb;
 
-	ENTER_CLASS_FUNCTION("Navigator");
+	ENTER_CLASS_FUNCTION("NavigatorWindow");
 
 	switch(pageType){
 
@@ -457,59 +461,59 @@ void Navigator::onInitPage(mWidget* self,int pageType)
             break;	
 	}
 
-	EXIT_CLASS_FUNCTION("Navigator");
+	EXIT_CLASS_FUNCTION("NavigatorWindow");
 
     return;
 }
 
-void Navigator::page_onInitPage(mWidget* self, DWORD add_data)
+void NavigatorWindow::page_onInitPage(mWidget* self, DWORD add_data)
 {
-    Navigator *pThis;
+    NavigatorWindow *pThis;
     mPageData *pageData;
 
 	
-	ENTER_CLASS_FUNCTION("Navigator");
+	ENTER_CLASS_FUNCTION("NavigatorWindow");
 
     pageData = (mPageData *)add_data;
    
     pThis = pageData->pThis;
     pThis->onInitPage(self, pageData->data);
 	
-	EXIT_CLASS_FUNCTION("Navigator");
+	EXIT_CLASS_FUNCTION("NavigatorWindow");
 }
 
-int Navigator::page_onShowPage(mWidget* self, HWND hwnd, int show_cmd)
+int NavigatorWindow::page_onShowPage(mWidget* self, HWND hwnd, int show_cmd)
 {
 	
-	ENTER_CLASS_FUNCTION("Navigator");
+	ENTER_CLASS_FUNCTION("NavigatorWindow");
 	
-	EXIT_CLASS_FUNCTION("Navigator")
+	EXIT_CLASS_FUNCTION("NavigatorWindow")
 
     return 1;
 }
 
-int Navigator::page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
+int NavigatorWindow::page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
 {
 	
-	ENTER_CLASS_FUNCTION("Navigator");
+	ENTER_CLASS_FUNCTION("NavigatorWindow");
     if (wParam == IDC_REFRESH) {
        
     }
 	
-	EXIT_CLASS_FUNCTION("Navigator")
+	EXIT_CLASS_FUNCTION("NavigatorWindow")
     return 0;
 }
 
-void Navigator::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
+void NavigatorWindow::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
 {
     mPageData *pageData;
     
-    ENTER_CLASS_FUNCTION("Navigator");
+    ENTER_CLASS_FUNCTION("NavigatorWindow");
     pageData = (mPageData *)::GetWindowAdditionalData(self->hwnd);
     if (pageData)
     {
         logging_trace("free pageData: %p\n", pageData);
         free(pageData);
     }
-    EXIT_CLASS_FUNCTION("Navigator");
+    EXIT_CLASS_FUNCTION("NavigatorWindow");
 }
