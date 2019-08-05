@@ -31,7 +31,7 @@ OBJS    := $(patsubst %.cpp, %.o, $(SOURCE))
 LOGGING = liblogging.a
 TARGET := gui
 
-.PHONY : all objs clean rebuild
+.PHONY : all objs clean rebuild cscope
 
 all : $(TARGET)
 
@@ -61,3 +61,9 @@ $(LIBVDPSKIN):
 $(LIBNAVIGATOR):
 	make -C ./navigator
 
+cscope:
+	@find ./ -name "*.[hc]" > ./cscope.files
+	@find ./ -name "*.cpp" >> ./cscope.files
+	@cscope -bRqk
+	@echo "cscope.files has been updated!"
+	@echo ""
