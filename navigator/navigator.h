@@ -1,7 +1,7 @@
 #ifndef _NCSCTRL_NAVIGATOR_H_
 #define _NCSCTRL_NAVIGATOR_H_
 
-#include "navigator.h"
+#include "navigatorpage.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -66,8 +66,7 @@ private:
     typedef struct _mPageData
     {
         Navigator   *pThis;
-        DWORD       data;
-        BITMAP               
+        DWORD       data;           
     } mPageData;
 
 	BITMAP m_bmpAudioMemo;   

@@ -1,7 +1,7 @@
 #ifndef _MAINWINDOW_H_
 #define _MAINWINDOW_H_
 
-#include "navigator.h"
+#include "navigator_window.h"
 
 class MainWindow {
 public:

@@ -4,6 +4,10 @@ AR  := ar
 MINIGUI_INCLUDE=-I/usr/local/include/minigui
 MINIGUI_LIB=-L/usr/local/lib -lminigui_ths -lmgncs
 
+LIBNAVIGATOR=libnavigator.a
+NAVIGATOR_INCLUDE=-I./navigator
+NAVIGATOR_LIB=-L./navigator -lnavigator
+
 LIBVDPSKIN=libvdpskin.a
 VDPSKIN_INCLUDE=-I./vdpskin
 VDPSKIN_LIB=-Lvdpskin -lvdpskin
@@ -18,7 +22,7 @@ CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
 LDFLAGS := -pthread
 #-lts
-LIBS    := $(LOGGING_LIB) $(VDPSKIN_LIB) $(MINIGUI_LIB) -lpng -ljpeg -lm -ldl -lfreetype
+LIBS    := $(LOGGING_LIB) $(VDPSKIN_LIB) $(NAVIGATOR_LIB) $(MINIGUI_LIB) -lpng -ljpeg -lm -ldl -lfreetype
 
 
 SOURCE  := $(wildcard src/*.cpp)
@@ -43,8 +47,9 @@ clean:
 	@rm -rf $(TARGET)
 	make -C ./logging clean
 	make -C ./vdpskin clean
+	make -C ./navigator clean
 
-$(TARGET) : $(OBJS) $(LOGGING) $(LIBVDPSKIN) 
+$(TARGET) : $(OBJS) $(LOGGING) $(LIBVDPSKIN) $(LIBNAVIGATOR)
 	$(C++) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
 
 $(LOGGING):
@@ -52,3 +57,7 @@ $(LOGGING):
 
 $(LIBVDPSKIN):
 	make -C ./vdpskin
+
+$(LIBNAVIGATOR):
+	make -C ./navigator
+

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mainwindow.h"
-#include "navigator.h"
+#include "navigator_window.h"
 #include "navigatorres.h"
 #include "navigatorskin.h"
 #include "trace.h"

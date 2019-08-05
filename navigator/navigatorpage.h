@@ -112,7 +112,7 @@ struct _mNavigatorPageClass
  *
  * \note It need to be implemented by user.
  */
-typedef void (*NCS_CB_ONINITPAGE)(mNavigatorPage *self, DWORD addData);
+typedef void (*NCS_CB_ONINITNVGTRPAGE)(mNavigatorPage *self, DWORD addData);
 
 /**
  * \var typedef int (*NCS_CB_ONSHOWPAGE)(mNavigatorPage *self, HWND focusChild, int showCmd);
@@ -128,7 +128,7 @@ typedef void (*NCS_CB_ONINITPAGE)(mNavigatorPage *self, DWORD addData);
  * \return           Nonzero for success, zero for failure.
  * \note It need to be implemented by user.
  */
-typedef int (*NCS_CB_ONSHOWPAGE)(mNavigatorPage *self, HWND focusChild, int showCmd);
+typedef int (*NCS_CB_ONSHOWNVGTRPAGE)(mNavigatorPage *self, HWND focusChild, int showCmd);
 
 /**
  * \var typedef int (*NCS_CB_ONSHEETCMD)(mNavigatorPage *self, DWORD param1, DWORD param2);
@@ -143,7 +143,7 @@ typedef int (*NCS_CB_ONSHOWPAGE)(mNavigatorPage *self, HWND focusChild, int show
  *
  * \note It need to be implemented by user.
  */
-typedef int (*NCS_CB_ONSHEETCMD)(mNavigatorPage *self, DWORD param1, DWORD param2);
+typedef int (*NCS_CB_ONNVGTRCMD)(mNavigatorPage *self, DWORD param1, DWORD param2);
 
 #define mNavigatorPageRendererHeader(clsName, parentClass) \
 	mContainerRendererHeader(clsName, parentClass)
