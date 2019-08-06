@@ -17,9 +17,11 @@ GUI::~GUI()
 bool GUI::init()
 {
     bool ret = false;
-             
+
     ::ncsInitialize ();
+    ::InitNavigatorSkinRenderer();             
     ::ncsInitVDPSkinRenderers();
+
 
     //    ::SetDefaultWindowElementRenderer("skin");
     

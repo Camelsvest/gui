@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mainwindow.h"
-#include "navigator.h"
 #include "navigator_window.h"
 #include "navigatorres.h"
 #include "navigatorskin.h"
@@ -325,9 +324,8 @@ NCS_EVENT_HANDLER NavigatorWindow::m_pageHandlers[] =
 };
 
 NavigatorWindow::NavigatorWindow()
-    : m_propsheet(NULL)
+    : m_navigator(NULL)
 {
-    ::InitNavigatorSkinRenderer();
     ::RegisterNavigatorComponent();
 }
 
@@ -342,7 +340,7 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
     
     bool ret = false;
     
-	m_propsheet =(mPropSheet*) ncsCreateWindow (
+	m_navigator =(mNavigator*) ncsCreateWindow (
         NCSCTRL_NAVIGATOR,
         "NavigatorWindow",     // caption
         WS_VISIBLE | NCSS_PRPSHT_SCROLLABLE, WS_EX_NONE,
@@ -354,7 +352,7 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         NULL,           // NCS_EVENT_HANDLER * handlers,
         0);
 
-	if (!m_propsheet)
+	if (!m_navigator)
     {
         logging_error("Failed to create mPropsheet.\r\n");		
 	}
@@ -370,7 +368,7 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_FIRST;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
 
 	    PageSysInfo.caption = "Second Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -378,7 +376,7 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_SECOND;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
 
 	    PageSysInfo.caption = "Third Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -386,7 +384,7 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_THIRD;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
 
 	    PageSysInfo.caption = "Four Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -394,7 +392,7 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_FOUR;
 	    PageSysInfo.dwAddData = (DWORD)pageData;        
- 	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+ 	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
 
 	    PageSysInfo.caption = "Five Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -402,9 +400,9 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_FIVE;
 	    PageSysInfo.dwAddData = (DWORD)pageData;        
-	    _c(m_propsheet)->addPage(m_propsheet, &PageSysInfo, m_pageHandlers);
+	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
 
-		_c(m_propsheet)->setProperty(m_propsheet, NCSP_PRPSHT_TABMARGIN, 8);
+		_c(m_navigator)->setProperty(m_navigator, NCSP_PRPSHT_TABMARGIN, 8);
 
         ret = true;
 	}

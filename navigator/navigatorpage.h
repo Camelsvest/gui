@@ -14,7 +14,7 @@ extern "C" {
  * \def NCSCTRL_PAGE
  * \brief The control class name of mNavigatorPage.
  */
-#define NCSCTRL_NAVIGATORPAGE           NCSCLASSNAME("navigator_page")
+#define NCSCTRL_NAVIGATORPAGE           NCSCLASSNAME("navigatorpage")
 
 typedef struct _mNavigatorPage mNavigatorPage;
 typedef struct _mNavigatorPageClass mNavigatorPageClass;

@@ -8,6 +8,7 @@
 #include <minigui/control.h>
 
 #include <mgncs/mgncs.h>
+#include "navigator.h"
 
 
 #define MSG_NVGT_BASEINDEX	(MSG_USER + 1000)
@@ -36,8 +37,6 @@
 #define PAGE_FIVE       5
 
 
-#define CTRL_NAVIGATOR  ("NVGTCTRL")
-
 class NavigatorWindow      {
 
 public:
@@ -59,7 +58,7 @@ private:
 	void unregisterAllPictures();
     
 private:   
-    mPropSheet *m_propsheet;
+    mNavigator *m_navigator;
 
     static NCS_EVENT_HANDLER m_pageHandlers[];
 

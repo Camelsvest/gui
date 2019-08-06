@@ -31,7 +31,7 @@ OBJS    := $(patsubst %.cpp, %.o, $(SOURCE))
 LOGGING = liblogging.a
 TARGET := gui
 
-.PHONY : all objs clean rebuild cscope
+.PHONY : all objs clean rebuild cscope install
 
 all : $(TARGET)
 
@@ -67,3 +67,7 @@ cscope:
 	@cscope -bRqk
 	@echo "cscope.files has been updated!"
 	@echo ""
+
+install:
+	sudo mv /usr/local/etc/mgncs.cfg /usr/local/etc/mgncs.cfg.bak
+	sudo cp ./etc/mgncs.cfg /usr/local/etc/
