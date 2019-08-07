@@ -38,7 +38,7 @@ static void skin_resetHeadArea (mNavigator *self, RECT* rcClient, DWORD style)
     self->headRect.left = 0;
     self->headRect.right = RECTWP(rcClient);
 
-    if ((style&NCSS_PRPSHT_TABMASK) == NCSS_PRPSHT_BOTTOM) {
+    if ((style&NCSS_NVGTR_TABMASK) == NCSS_NVGTR_BOTTOM) {
         self->headRect.bottom = RECTHP(rcClient);
     }
     else {
@@ -59,7 +59,7 @@ static void skin_getRect(mNavigator *self,
 
     switch (which)
     {
-        case NCSF_PRPSHT_BORDER:
+        case NCSF_NVGTR_BORDER:
         {
             RECT rcWin;
             GetWindowRect (self->hwnd, &rcWin);
@@ -67,7 +67,7 @@ static void skin_getRect(mNavigator *self,
             rcResult->left = 0;
             rcResult->right = self->headRect.right;
 
-            if ((style & NCSS_PRPSHT_TABMASK) == NCSS_PRPSHT_BOTTOM) {
+            if ((style & NCSS_NVGTR_TABMASK) == NCSS_NVGTR_BOTTOM) {
                 rcResult->top = 0;
                 rcResult->bottom = RECTH(rcWin) - RECTH(self->headRect) + tabBorder;
             }
@@ -77,12 +77,12 @@ static void skin_getRect(mNavigator *self,
             }
             return;
         }
-        case NCSF_PRPSHT_PAGE:
+        case NCSF_NVGTR_PAGE:
         {
             rcResult->left = tabBorder;
             rcResult->right = rcClient->right - tabBorder;
 
-            if ((style & NCSS_PRPSHT_TABMASK) == NCSS_PRPSHT_BOTTOM) {
+            if ((style & NCSS_NVGTR_TABMASK) == NCSS_NVGTR_BOTTOM) {
                 rcResult->top = tabBorder;
             }
             else {
@@ -92,12 +92,12 @@ static void skin_getRect(mNavigator *self,
                 - RECTH(self->headRect) - 2 * tabBorder;
             return;
         }
-        case NCSF_PRPSHT_TAB:
+        case NCSF_NVGTR_TAB:
         {
             rcResult->top = self->headRect.top;
             rcResult->bottom = self->headRect.bottom;
 
-            if ((style&NCSS_PRPSHT_BTNMASK) == NCSS_PRPSHT_SCROLLABLE
+            if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE
                     &&self->btnShow) {
                 rcResult->left = self->headRect.left + btnSize;
                 rcResult->right = self->headRect.right - btnSize;
@@ -109,8 +109,8 @@ static void skin_getRect(mNavigator *self,
 
             return;
         }
-        case NCSF_PRPSHT_LEFT:
-            if ((style&NCSS_PRPSHT_BTNMASK) == NCSS_PRPSHT_SCROLLABLE
+        case NCSF_NVGTR_LEFT:
+            if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE
                     &&self->btnShow) {
                 rcResult->left = self->headRect.left;
                 rcResult->right = rcResult->left + btnSize;
@@ -122,8 +122,8 @@ static void skin_getRect(mNavigator *self,
             }
             return;
 
-        case NCSF_PRPSHT_RIGHT:
-            if ((style&NCSS_PRPSHT_BTNMASK) == NCSS_PRPSHT_SCROLLABLE
+        case NCSF_NVGTR_RIGHT:
+            if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE
                     &&self->btnShow) {
                 rcResult->right = self->headRect.right;
                 rcResult->left = rcResult->right - btnSize;
@@ -190,7 +190,7 @@ static void skin_drawTab(mNavigator *self, HDC hdc,
     if (!(di.bmp = GetBitmapFromRes (key)))
         return;
 
-    bottom = (GetWindowStyle(self->hwnd) & NCSS_PRPSHT_TABMASK) == NCSS_PRPSHT_BOTTOM;
+    bottom = (GetWindowStyle(self->hwnd) & NCSS_NVGTR_TABMASK) == NCSS_NVGTR_BOTTOM;
 
     di.nr_line  = 4;
     di.nr_col   = 1;

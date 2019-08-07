@@ -80,7 +80,7 @@ static mNavigatorPage* createPage (mNavigator* self,
         exStyle = WS_EX_USEPARENTRDR;
 
     GetClientRect(self->hwnd, &rcClient);
-    self->renderer->getRect(self, &rcClient, &rcPage, NCSF_PRPSHT_PAGE);
+    self->renderer->getRect(self, &rcClient, &rcPage, NCSF_NVGTR_PAGE);
 
     page = (mNavigatorPage*)ncsCreateWindow (
                         NCSCTRL_NAVIGATORPAGE,
@@ -199,7 +199,7 @@ static void recalcTabWidths (mNavigator* self, DWORD style)
     if (self->pageCount == 0)
         return;
 
-    if (style & NCSS_PRPSHT_COMPACTTAB) {
+    if (style & NCSS_NVGTR_COMPACTTAB) {
         int totalWidth = 0;
 
         hdc = GetClientDC (self->hwnd);
@@ -265,7 +265,7 @@ static BOOL changeActivePage(mNavigator* self,
         self->active = page;
 
         /*change firstView page for scrollable style*/
-        if ((style&NCSS_PRPSHT_BTNMASK) == NCSS_PRPSHT_SCROLLABLE) {
+        if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE) {
 
             hdc = GetClientDC (self->hwnd);
             calcScrollPageTitleWidth (hdc, self, page);
@@ -275,12 +275,12 @@ static BOOL changeActivePage(mNavigator* self,
         }
 
         /*notify parent activeChanged*/
-        ncsNotifyParent ((mWidget*)self, NCSN_PRPSHT_ACTIVECHANGED);
+        ncsNotifyParent ((mWidget*)self, NCSN_NVGTR_ACTIVECHANGED);
 
         /*show new active page*/
         _c(page)->showPage (page, SW_SHOW);
 
-        if (((style&NCSS_PRPSHT_BTNMASK) != NCSS_PRPSHT_SCROLLABLE)
+        if (((style&NCSS_NVGTR_BTNMASK) != NCSS_NVGTR_SCROLLABLE)
                 && reCount) {
             recalcTabWidths (self, style);
         }
@@ -300,7 +300,7 @@ static int mNavigator_onSizeChanged(mNavigator* self, RECT* prcClient)
 
     self->renderer->resetHeadArea(self, &rcClient, style);
 
-    if ((style&NCSS_PRPSHT_BTNMASK) != NCSS_PRPSHT_SCROLLABLE) {
+    if ((style&NCSS_NVGTR_BTNMASK) != NCSS_NVGTR_SCROLLABLE) {
         recalcTabWidths (self, style);
     }
     else {
@@ -309,7 +309,7 @@ static int mNavigator_onSizeChanged(mNavigator* self, RECT* prcClient)
     }
 
     if (page)
-        self->renderer->getRect (self, &rcClient, &rcPage, NCSF_PRPSHT_PAGE);
+        self->renderer->getRect (self, &rcClient, &rcPage, NCSF_NVGTR_PAGE);
 
     while(page) {
         MoveWindow (page->hwnd, rcPage.left, rcPage.top,
@@ -334,15 +334,15 @@ static int mNavigator_onLButtonDown(mNavigator* self,
     style = GetWindowStyle (self->hwnd);
     GetClientRect(self->hwnd, &rcClient);
 
-    self->renderer->getRect(self, &rcClient, &rcResult, NCSF_PRPSHT_TAB);
+    self->renderer->getRect(self, &rcClient, &rcResult, NCSF_NVGTR_TAB);
 
     if (!PtInRect (&rcResult, x, y)) {
         if (!self->btnShow) {
             return 1;
         }
-        self->renderer->getRect(self, &rcClient, &rcResult, NCSF_PRPSHT_LEFT);
+        self->renderer->getRect(self, &rcClient, &rcResult, NCSF_NVGTR_LEFT);
         if (!PtInRect (&rcResult, x, y)) {
-            self->renderer->getRect(self, &rcClient, &rcResult, NCSF_PRPSHT_RIGHT);
+            self->renderer->getRect(self, &rcClient, &rcResult, NCSF_NVGTR_RIGHT);
             if (!PtInRect (&rcResult, x, y)) {
                 return 1;
             }
@@ -358,7 +358,7 @@ static int mNavigator_onLButtonDown(mNavigator* self,
     }
     else {
         /*tab*/
-        if ((style & NCSS_PRPSHT_BTNMASK) == NCSS_PRPSHT_SCROLLABLE) {
+        if ((style & NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE) {
             page = self->firstView;
         }
         else  {
@@ -434,7 +434,7 @@ static mNavigatorPage* mNavigator_addPage(mNavigator* self,
 
     style = GetWindowStyle (self->hwnd);
 
-    if ((style&NCSS_PRPSHT_BTNMASK) != NCSS_PRPSHT_SCROLLABLE) {
+    if ((style&NCSS_NVGTR_BTNMASK) != NCSS_NVGTR_SCROLLABLE) {
         if (RECTW(self->headRect) /(self->pageCount + 1) < self->minTabWidth) {
             fprintf (stderr, "addPage Error> headRect width error.\n");
             return NULL;
@@ -469,7 +469,7 @@ static BOOL mNavigator_removePage(mNavigator* self, mNavigatorPage* delPage)
 
     next = NEXTPAGE(self, delPage);
 
-    if ((style & NCSS_PRPSHT_BTNMASK) != NCSS_PRPSHT_SCROLLABLE) {
+    if ((style & NCSS_NVGTR_BTNMASK) != NCSS_NVGTR_SCROLLABLE) {
         if (!next)
             prev = PREVPAGE(self, delPage);
 
@@ -483,7 +483,7 @@ static BOOL mNavigator_removePage(mNavigator* self, mNavigatorPage* delPage)
             else
                 self->active = next;
 
-            ncsNotifyParent ((mWidget*)self, NCSN_PRPSHT_ACTIVECHANGED);
+            ncsNotifyParent ((mWidget*)self, NCSN_NVGTR_ACTIVECHANGED);
             if (self->active) {
                 _c(self->active)->showPage(self->active, SW_SHOW);
             }
@@ -521,7 +521,7 @@ static BOOL mNavigator_removePage(mNavigator* self, mNavigatorPage* delPage)
         if (NEXTPAGE(self, NULL))  updateNavigator(self);
 
         if (activeChanged)
-            ncsNotifyParent ((mWidget*)self, NCSN_PRPSHT_ACTIVECHANGED);
+            ncsNotifyParent ((mWidget*)self, NCSN_NVGTR_ACTIVECHANGED);
 
         if (self->active) {
             _c(self->active)->showPage(self->active, SW_SHOW);
@@ -647,7 +647,7 @@ static void recalcPageWidth(mNavigator* self)
     HDC hdc;
     DWORD style = GetWindowStyle(self->hwnd);
 
-    if ((style&NCSS_PRPSHT_BTNMASK) == NCSS_PRPSHT_SCROLLABLE) {
+    if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE) {
         hdc = GetClientDC (self->hwnd);
         while(page) {
             calcScrollPageTitleWidth (hdc, self, page);
@@ -666,25 +666,25 @@ static void recalcPageWidth(mNavigator* self)
 
 static BOOL mNavigator_setProperty(mNavigator *self, int id, DWORD value)
 {
-	if( id >= NCSP_PRPSHT_MAX)
+	if( id >= NCSP_NVGTR_MAX)
 		return FALSE;
 
 	switch(id)
 	{
-        case NCSP_PRPSHT_ACTIVEPAGE:
+        case NCSP_NVGTR_ACTIVEPAGE:
             return mNavigator_setActivePage(self, (mNavigatorPage*)value);
 
-        case NCSP_PRPSHT_ACTIVEPAGEIDX:
+        case NCSP_NVGTR_ACTIVEPAGEIDX:
             return mNavigator_setActivePageByIndex(self, value);
 
-        case NCSP_PRPSHT_TABMARGIN:
+        case NCSP_NVGTR_TABMARGIN:
             if ((int)value > 0) {
                 self->tabMargin = (int)value;
                 recalcPageWidth(self);
                 return TRUE;
             }
 
-        case NCSP_PRPSHT_MINTABWIDTH:
+        case NCSP_NVGTR_MINTABWIDTH:
             if ((int)value > 0) {
                 self->minTabWidth = (int)value;
                 recalcPageWidth(self);
@@ -697,30 +697,30 @@ static BOOL mNavigator_setProperty(mNavigator *self, int id, DWORD value)
 
 static DWORD mNavigator_getProperty(mNavigator* self, int id)
 {
-	if( id >= NCSP_PRPSHT_MAX)
+	if( id >= NCSP_NVGTR_MAX)
 		return -1;
 
 	switch (id)
     {
-        case NCSP_PRPSHT_TABMARGIN:
+        case NCSP_NVGTR_TABMARGIN:
             return self->tabMargin;
 
-        case NCSP_PRPSHT_PAGECOUNT:
+        case NCSP_NVGTR_PAGECOUNT:
             return self->pageCount;
 
-        case NCSP_PRPSHT_MINTABWIDTH:
+        case NCSP_NVGTR_MINTABWIDTH:
             return self->minTabWidth;
 
-        case NCSP_PRPSHT_ACTIVEPAGE:
+        case NCSP_NVGTR_ACTIVEPAGE:
             return (DWORD)self->active;
 
-        case NCSP_PRPSHT_ACTIVEPAGEIDX:
+        case NCSP_NVGTR_ACTIVEPAGEIDX:
             return _c(self)->getPageIndex(self, self->active);
 
-        case NCSP_PRPSHT_FIRSTVIEWPAGE:
+        case NCSP_NVGTR_FIRSTVIEWPAGE:
             return (DWORD)self->firstView;
 
-        case NCSP_PRPSHT_FIRSTVIEWPAGEIDX:
+        case NCSP_NVGTR_FIRSTVIEWPAGEIDX:
             return _c(self)->getPageIndex(self, self->firstView);
     }
 
@@ -738,20 +738,20 @@ static void mNavigator_onPaint (mNavigator* self, HDC hdc, const PCLIPRGN pinv_c
     GetClientRect (self->hwnd, &rcClient);
 
     /* draw border */
-    self->renderer->getRect(self, &rcClient, &destRect, NCSF_PRPSHT_BORDER);
+    self->renderer->getRect(self, &rcClient, &destRect, NCSF_NVGTR_BORDER);
     self->renderer->drawBorder(self, hdc, &destRect);
 
-    if ((style & NCSS_PRPSHT_BTNMASK) == NCSS_PRPSHT_SCROLLABLE) {
+    if ((style & NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE) {
         page = self->firstView;
         if (self->btnShow) {
-            self->renderer->getRect(self, &rcClient, &destRect, NCSF_PRPSHT_LEFT);
+            self->renderer->getRect(self, &rcClient, &destRect, NCSF_NVGTR_LEFT);
 
             if (self->active == NEXTPAGE(self, NULL))
                 self->renderer->drawScrollBtn(self, hdc, &destRect, NCSR_ARROW_LEFT | NCSRS_DISABLE);
             else
                 self->renderer->drawScrollBtn(self, hdc, &destRect, NCSR_ARROW_LEFT);
 
-            self->renderer->getRect(self, &rcClient, &destRect, NCSF_PRPSHT_RIGHT);
+            self->renderer->getRect(self, &rcClient, &destRect, NCSF_NVGTR_RIGHT);
 
             if (NEXTPAGE(self, self->active) == NULL)
                 self->renderer->drawScrollBtn(self, hdc, &destRect, NCSR_ARROW_RIGHT | NCSRS_DISABLE);
@@ -764,7 +764,7 @@ static void mNavigator_onPaint (mNavigator* self, HDC hdc, const PCLIPRGN pinv_c
     }
 
     //get tab area
-    self->renderer->getRect(self, &rcClient, &tabRect, NCSF_PRPSHT_TAB);
+    self->renderer->getRect(self, &rcClient, &tabRect, NCSF_NVGTR_TAB);
     destRect.right = tabRect.left;
     destRect.top = tabRect.top;
     destRect.bottom = tabRect.bottom;
@@ -801,7 +801,7 @@ static BOOL mNavigator_addChildren(mNavigator* self, NCS_WND_TEMPLATE * children
 		exStyle |= WS_EX_TRANSPARENT;
 
 	GetClientRect(self->hwnd, &rcClient);
-	self->renderer->getRect(self, &rcClient, &rcPage, NCSF_PRPSHT_PAGE);
+	self->renderer->getRect(self, &rcClient, &rcPage, NCSF_NVGTR_PAGE);
 
 	//create pages
 	for(i=0; i<count; i++)

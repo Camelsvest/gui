@@ -337,6 +337,8 @@ NavigatorWindow::~NavigatorWindow()
 bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
 {    
     mPageData *pageData;
+    mNavigatorPage *navigatorPage;
+    HICON hIcon;
     
     bool ret = false;
     
@@ -368,7 +370,11 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_FIRST;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
-	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+
+	    navigatorPage = _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+        hIcon = ::LoadIconFromFile(HDC_SCREEN, PAGE_ICON_FILE1, 0);
+        if (hIcon)
+            _c(navigatorPage)->setIcon(navigatorPage, hIcon);
 
 	    PageSysInfo.caption = "Second Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -376,7 +382,10 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_SECOND;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
-	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+	    navigatorPage = _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+        hIcon = ::LoadIconFromFile(HDC_SCREEN, PAGE_ICON_FILE2, 0);
+        if (hIcon)
+            _c(navigatorPage)->setIcon(navigatorPage, hIcon);       
 
 	    PageSysInfo.caption = "Third Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -384,7 +393,10 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_THIRD;
 	    PageSysInfo.dwAddData = (DWORD)pageData;
-	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+	    navigatorPage = _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+        hIcon = ::LoadIconFromFile(HDC_SCREEN, PAGE_ICON_FILE3, 0);
+        if (hIcon)
+            _c(navigatorPage)->setIcon(navigatorPage, hIcon);        
 
 	    PageSysInfo.caption = "Four Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -392,7 +404,10 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_FOUR;
 	    PageSysInfo.dwAddData = (DWORD)pageData;        
- 	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+ 	    navigatorPage = _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+        hIcon = ::LoadIconFromFile(HDC_SCREEN, PAGE_ICON_FILE4, 0);
+        if (hIcon)
+            _c(navigatorPage)->setIcon(navigatorPage, hIcon);        
 
 	    PageSysInfo.caption = "Five Page";
         pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -400,7 +415,10 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         pageData->pThis = this;
         pageData->data = PAGE_FIVE;
 	    PageSysInfo.dwAddData = (DWORD)pageData;        
-	    _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+	    navigatorPage = _c(m_navigator)->addPage(m_navigator, &PageSysInfo, m_pageHandlers);
+        hIcon = ::LoadIconFromFile(HDC_SCREEN, PAGE_ICON_FILE5, 0);
+        if (hIcon)
+            _c(navigatorPage)->setIcon(navigatorPage, hIcon);
 
 		_c(m_navigator)->setProperty(m_navigator, NCSP_PRPSHT_TABMARGIN, 8);
 
@@ -504,6 +522,7 @@ int NavigatorWindow::page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
 
 void NavigatorWindow::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
 {
+    HICON hIcon;
     mPageData *pageData;
     
     ENTER_CLASS_FUNCTION("NavigatorWindow");
@@ -513,5 +532,10 @@ void NavigatorWindow::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
         logging_trace("free pageData: %p\n", pageData);
         free(pageData);
     }
+
+    hIcon = _c((mNavigatorPage *)self)->getIcon((mNavigatorPage *)self);
+    if (!hIcon)
+        ::DestroyIcon(hIcon);
+    
     EXIT_CLASS_FUNCTION("NavigatorWindow");
 }
