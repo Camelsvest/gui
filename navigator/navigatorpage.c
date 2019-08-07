@@ -24,9 +24,25 @@ static const char* mNavigatorPage_getTitle(mNavigatorPage* self)
     return GetWindowCaption(self->hwnd);
 }
 
+
+
+/* +------------+------------+------------+------------+   <- TAB
+ * |            |            |            |            |   
+ * |   Icon     |            |            |            |   
+ * |   text     |            |            |            |
+ * |            |            |            |            |
+ * +------------+------------+------------+------------+   <- Page
+ * |            |            |            |            |
+ * |            |            |            |            |
+ * |            |            |            |            |
+ * |            |            |            |            |
+ * |            |            |            |            |
+ * +------------+------------+------------+------------+
+ */
+
 static void mNavigatorPage_getTitleWidth (mNavigatorPage* self, HDC hdc)
 {
-    int     width = 0;
+    int     icon_heigh, icon_width = 0, width = 0;
     SIZE    ext;
     char*   title;
 
@@ -37,8 +53,9 @@ static void mNavigatorPage_getTitleWidth (mNavigatorPage* self, HDC hdc)
         width = ext.cx;
     }
 
-    if (self->hIcon) {
-        width += 16;
+    if (self->hIcon && GetIconSize(self->hIcon, &icon_width, &icon_heigh)) {
+        if (icon_width > width)
+            width = icon_width;
     }
 
     self->titleWidth = width;

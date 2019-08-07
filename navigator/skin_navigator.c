@@ -16,7 +16,7 @@ extern mWidgetRenderer skin_widget_renderer;
 
 static void skin_resetHeadArea (mNavigator *self, RECT* rcClient, DWORD style)
 {
-    int height, minHeight, maxHeight = 40;
+    int height, minHeight, maxHeight = 256;
     DWORD key;
     PBITMAP pBmp;
 

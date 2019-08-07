@@ -420,7 +420,7 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         if (hIcon)
             _c(navigatorPage)->setIcon(navigatorPage, hIcon);
 
-		_c(m_navigator)->setProperty(m_navigator, NCSP_PRPSHT_TABMARGIN, 8);
+		_c(m_navigator)->setProperty(m_navigator, NCSP_NVGTR_TABMARGIN, 2);
 
         ret = true;
 	}
@@ -534,7 +534,7 @@ void NavigatorWindow::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
     }
 
     hIcon = _c((mNavigatorPage *)self)->getIcon((mNavigatorPage *)self);
-    if (!hIcon)
+    if (hIcon)
         ::DestroyIcon(hIcon);
     
     EXIT_CLASS_FUNCTION("NavigatorWindow");
