@@ -9,6 +9,7 @@
 
 #include <mgncs.h>
 #include "navigator.h"
+#include "logging.h"
 
 /*for page handle*/
 #define IDC_PAGE    20
@@ -120,6 +121,8 @@ static void updateNavigator (mNavigator* self)
     mNavigatorPage   *page, *tmp, *list;
     int     tabWidth = 0;
 
+    ENTER_FUNCTION;
+    
     list = NEXTPAGE(self, NULL);
 
     /*set btnShow status*/
@@ -174,13 +177,18 @@ static void updateNavigator (mNavigator* self)
         self->firstView = NEXTPAGE(self, self->firstView);
         page = self->firstView;
     }
+
+    EXIT_FUNCTION;
 }
 
 static void calcScrollPageTitleWidth (HDC hdc, mNavigator* self, mNavigatorPage* page)
 {
+    ENTER_FUNCTION;
+    
     _c(page)->getTitleWidth(page, hdc);
 
     page->titleWidth += self->tabMargin;
+    logging_trace("%s: titleWidth + tabMargin(%d) = %d\r\n", __FUNCTION__, self->tabMargin, page->titleWidth);
 
     if (page->titleWidth < self->minTabWidth) {
         page->titleWidth = self->minTabWidth;
@@ -189,6 +197,8 @@ static void calcScrollPageTitleWidth (HDC hdc, mNavigator* self, mNavigatorPage*
     if (page->titleWidth > self->scrollTabWidth) {
         page->titleWidth = self->scrollTabWidth;
     }
+
+    EXIT_FUNCTION;
 }
 
 static void recalcTabWidths (mNavigator* self, DWORD style)
@@ -196,8 +206,13 @@ static void recalcTabWidths (mNavigator* self, DWORD style)
     mNavigatorPage*  page;
     HDC     hdc;
 
+    ENTER_FUNCTION;
+    
     if (self->pageCount == 0)
+    {
+        EXIT_FUNCTION;
         return;
+    }
 
     if (style & NCSS_NVGTR_COMPACTTAB) {
         int totalWidth = 0;
@@ -246,14 +261,21 @@ static void recalcTabWidths (mNavigator* self, DWORD style)
 
         self->maxTabWidth = RECTW(self->headRect);
     }
+
+    EXIT_FUNCTION;
 }
 
 static BOOL changeActivePage(mNavigator* self,
         mNavigatorPage* page, DWORD style, BOOL reCount)
 {
     HDC hdc;
-    if (!page)
+
+    ENTER_FUNCTION;
+    
+    if (!page) {
+        EXIT_FUNCTION;
         return FALSE;
+    }
 
     if (page != self->active) {
         /*hide active page*/
@@ -286,8 +308,12 @@ static BOOL changeActivePage(mNavigator* self,
         }
 
         InvalidateRect (self->hwnd, &(self->headRect), TRUE);
+
+        EXIT_FUNCTION;
         return TRUE;
     }
+
+    EXIT_FUNCTION;
     return FALSE;
 }
 
@@ -297,6 +323,8 @@ static int mNavigator_onSizeChanged(mNavigator* self, RECT* prcClient)
     mNavigatorPage   *page = NEXTPAGE(self, NULL);
     RECT    rcPage;
 	RECT    rcClient = {0, 0, RECTWP(prcClient), RECTHP(prcClient)};
+
+    ENTER_FUNCTION;
 
     self->renderer->resetHeadArea(self, &rcClient, style);
 
@@ -318,6 +346,9 @@ static int mNavigator_onSizeChanged(mNavigator* self, RECT* prcClient)
     }
 
     InvalidateRect (self->hwnd, &(self->headRect), TRUE);
+
+    EXIT_FUNCTION;
+    
     return 0;
 }
 
@@ -647,6 +678,8 @@ static void recalcPageWidth(mNavigator* self)
     HDC hdc;
     DWORD style = GetWindowStyle(self->hwnd);
 
+    ENTER_FUNCTION;
+    
     if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE) {
         hdc = GetClientDC (self->hwnd);
         while(page) {
@@ -662,6 +695,8 @@ static void recalcPageWidth(mNavigator* self)
     }
 
     InvalidateRect (self->hwnd, &(self->headRect), TRUE);
+
+    EXIT_FUNCTION;
 }
 
 static BOOL mNavigator_setProperty(mNavigator *self, int id, DWORD value)
@@ -733,6 +768,8 @@ static void mNavigator_onPaint (mNavigator* self, HDC hdc, const PCLIPRGN pinv_c
     DWORD   style;
     RECT    rcClient, destRect, tabRect;
 
+    ENTER_FUNCTION;
+    
     style = GetWindowStyle(self->hwnd);
 
     GetClientRect (self->hwnd, &rcClient);
@@ -782,6 +819,8 @@ static void mNavigator_onPaint (mNavigator* self, HDC hdc, const PCLIPRGN pinv_c
 
         page = NEXTPAGE(self, page);
     }
+
+    EXIT_FUNCTION;
 }
 
 static BOOL mNavigator_addChildren(mNavigator* self, NCS_WND_TEMPLATE * children, int count)

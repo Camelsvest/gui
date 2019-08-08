@@ -3,7 +3,7 @@
 
 #include "mainwindow.h"
 #include "navigatorres.h"
-#include "trace.h"
+#include "logging.h"
 
 #define STR_CAP             "Notebook"
 #define STR_FILE             "File"

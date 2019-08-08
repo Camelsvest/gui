@@ -9,7 +9,7 @@
 
 #include <mgncs.h>
 #include "navigatorpage.h"
-
+#include "logging.h"
 
 static void mNavigatorPage_construct (mNavigatorPage *self,DWORD addData)
 {
@@ -28,8 +28,8 @@ static const char* mNavigatorPage_getTitle(mNavigatorPage* self)
 
 /* +------------+------------+------------+------------+   <- TAB
  * |            |            |            |            |   
- * |   Icon     |            |            |            |   
- * |   text     |            |            |            |
+ * |   Icon1    |   Icon2    |   Icon3    |    Icon4   |   
+ * |   text1    |   text2    |   text3    |    text4   |
  * |            |            |            |            |
  * +------------+------------+------------+------------+   <- Page
  * |            |            |            |            |
@@ -46,19 +46,27 @@ static void mNavigatorPage_getTitleWidth (mNavigatorPage* self, HDC hdc)
     SIZE    ext;
     char*   title;
 
+    ENTER_FUNCTION;
+    
     title = (char*)GetWindowCaption(self->hwnd);
 
     if (title) {
         GetTextExtent (hdc, title, -1, &ext);
         width = ext.cx;
+        logging_trace("Text width = %d\r\n", width);
     }
 
     if (self->hIcon && GetIconSize(self->hIcon, &icon_width, &icon_heigh)) {
+        logging_trace("Icon width = %d\r\n", icon_width);
         if (icon_width > width)
             width = icon_width;
     }
 
     self->titleWidth = width;
+
+    logging_trace("%s: titleWidth = %d\r\n", __FUNCTION__, width);
+
+    EXIT_FUNCTION;
 }
 
 BOOL mNavigatorPage_setTitle(mNavigatorPage* self, const char* title)

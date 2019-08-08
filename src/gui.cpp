@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "gui.h"
 #include "vdpskin.h"
-#include "trace.h"
+#include "logging.h"
 
 GUI::GUI()
 	: m_pMainWindow(NULL)

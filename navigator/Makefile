@@ -7,7 +7,7 @@ LIBS    :=
 LDFLAGS := -pthread
 
 DEFINES := 
-INCLUDE := -I. -I/usr/local/include/minigui -I/usr/local/include/mgncs
+INCLUDE := -I. -I../logging -I/usr/local/include/minigui -I/usr/local/include/mgncs
 CFLAGS  := -g -O0 -Wall -Wno-pointer-to-int-cast -pthread $(DEFINES) $(INCLUDE)
 CXXFLAGS:= $(CFLAGS) -DHAVE_CONFIG_H
 

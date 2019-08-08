@@ -6,7 +6,7 @@
 #include "navigator_window.h"
 #include "navigatorres.h"
 #include "navigatorskin.h"
-#include "trace.h"
+#include "logging.h"
 
 
 #define DEFAULT_TAB_HEIGHT  48
@@ -503,7 +503,7 @@ int NavigatorWindow::page_onShowPage(mWidget* self, HWND hwnd, int show_cmd)
 	
 	ENTER_CLASS_FUNCTION("NavigatorWindow");
 	
-	EXIT_CLASS_FUNCTION("NavigatorWindow")
+	EXIT_CLASS_FUNCTION("NavigatorWindow");
 
     return 1;
 }
@@ -516,7 +516,7 @@ int NavigatorWindow::page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
        
     }
 	
-	EXIT_CLASS_FUNCTION("NavigatorWindow")
+	EXIT_CLASS_FUNCTION("NavigatorWindow");
     return 0;
 }
 

@@ -13,7 +13,7 @@ VDPSKIN_INCLUDE=-I./vdpskin
 VDPSKIN_LIB=-Lvdpskin -lvdpskin
 
 LOGGING_INCLUDE=-Ilogging
-LOGGING_LIB= -Llogging -llogging
+LOGGING_LIB= -L./logging -llogging
 
 DEFINES := -D_MGNCS_RDR_SKIN
 INCLUDE := -Iinclude $(NAVIGATOR_INCLUDE) $(VDPSKIN_INCLUDE) $(MINIGUI_INCLUDE) $(LOGGING_INCLUDE)

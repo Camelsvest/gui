@@ -9,6 +9,7 @@
 
 #include <mgncs.h>
 #include "navigator.h"
+#include "logging.h"
 
 #define ICON_OFFSET 2
 
@@ -56,7 +57,17 @@ static void skin_getRect(mNavigator *self,
     int     btnSize = 16;
     int     tabBorder = 2;
     DWORD   style = GetWindowStyle (self->hwnd);
-
+    char    msg[][32] = {
+        "NCSF_NVGTR_BORDER",
+        "NCSF_NVGTR_TAB",
+        "NCSF_NVGTR_LEFT",
+        "NCSF_NVGTR_RIGHT",
+        "NCSF_NVGTR_PAGE"
+    };        
+        
+        
+    ENTER_FUNCTION;
+    
     switch (which)
     {
         case NCSF_NVGTR_BORDER:
@@ -75,7 +86,7 @@ static void skin_getRect(mNavigator *self,
                 rcResult->top = self->headRect.bottom - tabBorder;
                 rcResult->bottom = RECTH(rcWin) ;
             }
-            return;
+            break;
         }
         case NCSF_NVGTR_PAGE:
         {
@@ -90,7 +101,7 @@ static void skin_getRect(mNavigator *self,
             }
             rcResult->bottom = rcResult->top + RECTHP(rcClient)
                 - RECTH(self->headRect) - 2 * tabBorder;
-            return;
+            break;
         }
         case NCSF_NVGTR_TAB:
         {
@@ -107,7 +118,7 @@ static void skin_getRect(mNavigator *self,
                 rcResult->right = self->headRect.right;
             }
 
-            return;
+            break;
         }
         case NCSF_NVGTR_LEFT:
             if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE
@@ -120,7 +131,7 @@ static void skin_getRect(mNavigator *self,
             else {
                 SetRectEmpty(rcResult);
             }
-            return;
+            break;
 
         case NCSF_NVGTR_RIGHT:
             if ((style&NCSS_NVGTR_BTNMASK) == NCSS_NVGTR_SCROLLABLE
@@ -133,11 +144,16 @@ static void skin_getRect(mNavigator *self,
             else {
                 SetRectEmpty(rcResult);
             }
-            return;
+            break;
 
         default:
             break;
     }
+
+    logging_trace("%s: rcResult(left = %d, top = %d, right = %d, bottom = %d)\r\n", 
+        msg[which], rcResult->left, rcResult->top, rcResult->right, rcResult->bottom);
+    
+    EXIT_FUNCTION;
     return;
 }
 
@@ -186,9 +202,12 @@ static void skin_drawTab(mNavigator *self, HDC hdc,
     BOOL bottom;
 	RECT rc;
 
+    ENTER_FUNCTION;
     key = ncsGetElement((mWidget*)self, NCS_IMAGE_PRPSHT_TAB);
-    if (!(di.bmp = GetBitmapFromRes (key)))
+    if (!(di.bmp = GetBitmapFromRes (key))) {
+        EXIT_FUNCTION;
         return;
+    }
 
     bottom = (GetWindowStyle(self->hwnd) & NCSS_NVGTR_TABMASK) == NCSS_NVGTR_BOTTOM;
 
@@ -237,6 +256,8 @@ static void skin_drawTab(mNavigator *self, HDC hdc,
     SetBkMode (hdc, BM_TRANSPARENT);
     SetRect(&rc, x, ty, rcTab->right, by);
     DrawText(hdc, title, -1, &rc, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+
+    EXIT_FUNCTION;
 }
 
 
