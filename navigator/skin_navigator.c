@@ -10,6 +10,7 @@
 #include <mgncs.h>
 #include "navigator.h"
 #include "logging.h"
+#include "navigatortrace.h"
 
 #define ICON_OFFSET 2
 
@@ -21,6 +22,8 @@ static void skin_resetHeadArea (mNavigator *self, RECT* rcClient, DWORD style)
     DWORD key;
     PBITMAP pBmp;
 
+    ENTER_FUNCTION;
+    
     minHeight = 16 + 4 + 2* ICON_OFFSET;
     key = ncsGetElement((mWidget*)self, NCS_IMAGE_PRPSHT_TAB);
     pBmp = GetBitmapFromRes (key);
@@ -49,6 +52,9 @@ static void skin_resetHeadArea (mNavigator *self, RECT* rcClient, DWORD style)
     self->headRect.top = self->headRect.bottom - height;
     self->maxTabWidth = RECTW(self->headRect);
     self->scrollTabWidth = RECTW(self->headRect) - 2*16;
+
+    LOGGING_TRACE_RECT("headRect", (&self->headRect));
+    EXIT_FUNCTION;
 }
 
 static void skin_getRect(mNavigator *self,
@@ -150,8 +156,7 @@ static void skin_getRect(mNavigator *self,
             break;
     }
 
-    logging_trace("%s: rcResult(left = %d, top = %d, right = %d, bottom = %d)\r\n", 
-        msg[which], rcResult->left, rcResult->top, rcResult->right, rcResult->bottom);
+    LOGGING_TRACE_RECT(msg[which], rcResult);
     
     EXIT_FUNCTION;
     return;

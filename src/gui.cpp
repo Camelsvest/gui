@@ -1,6 +1,5 @@
 #include <assert.h>
 #include "gui.h"
-#include "vdpskin.h"
 #include "logging.h"
 
 GUI::GUI()
@@ -20,8 +19,6 @@ bool GUI::init()
 
     ::ncsInitialize ();
     ::InitNavigatorSkinRenderer();             
-    ::ncsInitVDPSkinRenderers();
-
 
     //    ::SetDefaultWindowElementRenderer("skin");
     
@@ -54,7 +51,6 @@ void GUI::uninit()
         m_pMainWindow->release();
         m_pMainWindow = NULL;
 
-        ::ncsUninitVDPSkinRenderers();
     	logging_trace("ncsUninitialize is invoked\r\n");       
     	::ncsUninitialize ();	
     }

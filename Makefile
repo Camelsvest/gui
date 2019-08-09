@@ -16,13 +16,14 @@ LOGGING_INCLUDE=-Ilogging
 LOGGING_LIB= -L./logging -llogging
 
 DEFINES := -D_MGNCS_RDR_SKIN
-INCLUDE := -Iinclude $(NAVIGATOR_INCLUDE) $(VDPSKIN_INCLUDE) $(MINIGUI_INCLUDE) $(LOGGING_INCLUDE)
+# $(VDPSKIN_INCLUDE) 
+INCLUDE := -Iinclude $(NAVIGATOR_INCLUDE) $(MINIGUI_INCLUDE) $(LOGGING_INCLUDE)
 
 CPPFLAGS  := -g -O0 -Wall -pthread $(DEFINES) $(INCLUDE)
 
 LDFLAGS := -pthread
-#-lts
-LIBS    := $(LOGGING_LIB) $(VDPSKIN_LIB) $(NAVIGATOR_LIB) $(MINIGUI_LIB) -lpng -ljpeg -lm -ldl -lfreetype
+#-lts $(VDPSKIN_LIB)
+LIBS    := $(LOGGING_LIB) $(NAVIGATOR_LIB) $(MINIGUI_LIB) -lpng -ljpeg -lm -ldl -lfreetype
 
 
 SOURCE  := $(wildcard src/*.cpp)
@@ -46,10 +47,11 @@ clean:
 	@rm -rf src/*.o
 	@rm -rf $(TARGET)
 	make -C ./logging clean
-	make -C ./vdpskin clean
+#	make -C ./vdpskin clean
 	make -C ./navigator clean
 
-$(TARGET) : $(OBJS) $(LOGGING) $(LIBVDPSKIN) $(LIBNAVIGATOR)
+#$(LIBVDPSKIN)
+$(TARGET) : $(OBJS) $(LOGGING) $(LIBNAVIGATOR)
 	$(C++) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
 
 $(LOGGING):
@@ -71,3 +73,4 @@ cscope:
 install:
 	sudo mv /usr/local/etc/mgncs.cfg /usr/local/etc/mgncs.cfg.bak
 	sudo cp ./etc/mgncs.cfg /usr/local/etc/
+	sudo cp ./res/cat.gif /usr/local/share/minigui/res/bmp/

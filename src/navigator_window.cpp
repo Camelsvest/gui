@@ -341,11 +341,13 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
     HICON hIcon;
     
     bool ret = false;
+
+    ENTER_CLASS_FUNCTION("NavigatorWindow");
     
 	m_navigator =(mNavigator*) ncsCreateWindow (
         NCSCTRL_NAVIGATOR,
         "NavigatorWindow",     // caption
-        WS_VISIBLE | NCSS_PRPSHT_SCROLLABLE, WS_EX_NONE,
+        WS_VISIBLE | NCSS_NVGTR_SIMPLE | NCSS_NVGTR_TOP, WS_EX_NONE,
         IDC_NAVIGATOR,
         rc->left, rc->top, rc->right, rc->bottom,
         hParent,
@@ -356,11 +358,11 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
 
 	if (!m_navigator)
     {
-        logging_error("Failed to create mPropsheet.\r\n");		
+        logging_error("Failed to create mNavigator.\r\n");		
 	}
     else
     {
-		logging_trace("Succeed to create mPropsheet\r\n");
+		logging_trace("Succeed to create mNavigator\r\n");
         
 		PageSysInfo.controls = CtrlSysInfo;
 
@@ -425,6 +427,8 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
         ret = true;
 	}
 
+    EXIT_CLASS_FUNCTION("NavigatorWindow");
+    
     return ret;
                        
 }

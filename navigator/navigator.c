@@ -98,7 +98,7 @@ static mNavigatorPage* createPage (mNavigator* self,
                         dlgTemplate->dwAddData);
 
     if (!page) {
-        fprintf (stderr, "createPage Error> create page window error. \n ");
+        logging_error("createPage Error> create page window error. \n ");
         return NULL;
     }
 
@@ -106,7 +106,7 @@ static mNavigatorPage* createPage (mNavigator* self,
 
     if (!_c(page)->addIntrinsicControls(page,
                 dlgTemplate->controls, dlgTemplate->controlnr)) {
-        fprintf (stderr, "createPage Error> set controls error. \n ");
+        logging_error("createPage Error> set controls error. \n ");
         DestroyWindow(page->hwnd);
         return NULL;
     }
@@ -458,8 +458,11 @@ static mNavigatorPage* mNavigator_addPage(mNavigator* self,
     mNavigatorPage*  page;
     DWORD   style;
 
+    ENTER_FUNCTION;
+    
     if ((dlgTemplate ->controlnr > 0) && !dlgTemplate->controls) {
-        fprintf (stderr, "addPage Error> controls info error.\n");
+        logging_error("addPage Error> controls info error.\n");
+        EXIT_FUNCTION;
         return NULL;
     }
 
@@ -467,13 +470,15 @@ static mNavigatorPage* mNavigator_addPage(mNavigator* self,
 
     if ((style&NCSS_NVGTR_BTNMASK) != NCSS_NVGTR_SCROLLABLE) {
         if (RECTW(self->headRect) /(self->pageCount + 1) < self->minTabWidth) {
-            fprintf (stderr, "addPage Error> headRect width error.\n");
+            logging_error("addPage Error> headRect width error.\n");
+            EXIT_FUNCTION;
             return NULL;
         }
     }
 
     if (!(page = createPage (self, dlgTemplate, style, handlers))) {
-        fprintf (stderr, "addPage Error> create page error.\n");
+        logging_error("addPage Error> create page error.\n");
+        EXIT_FUNCTION;
         return NULL;
     }
 
@@ -484,6 +489,7 @@ static mNavigatorPage* mNavigator_addPage(mNavigator* self,
         changeActivePage(self, page, style, TRUE);
     }
 
+    EXIT_FUNCTION;
     return page;
 }
 
@@ -701,6 +707,10 @@ static void recalcPageWidth(mNavigator* self)
 
 static BOOL mNavigator_setProperty(mNavigator *self, int id, DWORD value)
 {
+    BOOL ret;
+    
+    ENTER_FUNCTION;
+    
 	if( id >= NCSP_NVGTR_MAX)
 		return FALSE;
 
@@ -716,6 +726,8 @@ static BOOL mNavigator_setProperty(mNavigator *self, int id, DWORD value)
             if ((int)value > 0) {
                 self->tabMargin = (int)value;
                 recalcPageWidth(self);
+
+                EXIT_FUNCTION;
                 return TRUE;
             }
 
@@ -723,11 +735,16 @@ static BOOL mNavigator_setProperty(mNavigator *self, int id, DWORD value)
             if ((int)value > 0) {
                 self->minTabWidth = (int)value;
                 recalcPageWidth(self);
+
+                EXIT_FUNCTION;
                 return TRUE;
             }
 	}
 
-	return Class(mWidget).setProperty((mWidget*)self, id, value);
+	ret = Class(mWidget).setProperty((mWidget*)self, id, value);
+
+    EXIT_FUNCTION;
+    return ret;
 }
 
 static DWORD mNavigator_getProperty(mNavigator* self, int id)
