@@ -4,13 +4,10 @@
 #include <stdlib.h>
 #include "mainwindow.h"
 #include "navigator_window.h"
+#include "infobarwindow.h"
 #include "navigatorres.h"
 #include "navigatorskin.h"
 #include "logging.h"
-
-
-#define DEFAULT_TAB_HEIGHT  48
-
 
 static NCS_RDR_INFO spin_rdr_info[] = 
 {
@@ -312,7 +309,13 @@ static NCS_WND_TEMPLATE page_five[] = {
         0xFFFF0000,
 	},
 };
+ PBITMAP NavigatorWindow::m_navigatorBmp[NAVIGATOR_BMP_MAX] = {NULL};
 
+
+ char* NavigatorWindow::navigator_img_path[NAVIGATOR_BMP_MAX] = {
+	"./res/vdp_home_audiomemo.png",
+	"./res/content_bg.png"	
+ };
 
 NCS_EVENT_HANDLER NavigatorWindow::m_pageHandlers[] =
 {
@@ -320,6 +323,7 @@ NCS_EVENT_HANDLER NavigatorWindow::m_pageHandlers[] =
 	{MSG_SHOWPAGE,  reinterpret_cast<void*>(NavigatorWindow::page_onShowPage)},
 	{MSG_SHEETCMD,  reinterpret_cast<void*>(NavigatorWindow::page_onSheetCmd)},
 	{MSG_DESTROY,   reinterpret_cast<void*>(NavigatorWindow::page_onDestroy)},
+	{MSG_ERASEBKGND, reinterpret_cast<void*>(NavigatorWindow::page_onEraseBkGndPage)},
 	{0 , NULL }
 };
 
@@ -342,14 +346,14 @@ bool NavigatorWindow::createWindow(HWND hParent, RECT *rc)
     
     bool ret = false;
 
-    ENTER_CLASS_FUNCTION("NavigatorWindow");
-    
+    loadRes ();
+
 	m_navigator =(mNavigator*) ncsCreateWindow (
         NCSCTRL_NAVIGATOR,
         "NavigatorWindow",     // caption
         WS_VISIBLE | NCSS_NVGTR_SIMPLE | NCSS_NVGTR_TOP, WS_EX_NONE,
         IDC_NAVIGATOR,
-        rc->left, rc->top, rc->right, rc->bottom,
+        rc->left, rc->top, rc->right, rc->bottom - INFOBAR_H,
         hParent,
         NULL,           // NCS_PROP_ENTRY * props,
         prop_rdr_info,  // NCS_RDR_INFO * rdr_info,
@@ -443,15 +447,12 @@ void NavigatorWindow::onInitPage(mWidget* self,int pageType)
 
 		case PAGE_FIRST:
 			_c(self)->addChildren(self, page_first, \
-				sizeof(page_first)/sizeof(NCS_WND_TEMPLATE));
-			
-			if (LoadBitmapFromFile(HDC_SCREEN, &m_bmpAudioMemo, NAVIGATOR_SKIN_HOME_PAGE_BTN_AUDIOMEMO) != 0)				
-				logging_error("%s:%u %s Can\'t load bitmap\r\n", __FILE__, __LINE__, __FUNCTION__);
+				sizeof(page_first)/sizeof(NCS_WND_TEMPLATE));		
 			
 			mb = (mButton*)ncsGetChildObj(self->hwnd, ID_BUTTON_0);
 			if(mb)
             {
-				_c(mb)->setProperty(mb, NCSP_BUTTON_IMAGE, (DWORD)&m_bmpAudioMemo);
+				_c(mb)->setProperty(mb, NCSP_BUTTON_IMAGE, (DWORD)m_navigatorBmp[AUDIODEMO_BMP_INDEX]);
 				logging_trace("%s:%u %s setProperty\r\n", __FILE__, __LINE__, __FUNCTION__);
 			}
 			break;
@@ -516,12 +517,41 @@ int NavigatorWindow::page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam)
 {
 	
 	ENTER_CLASS_FUNCTION("NavigatorWindow");
-    if (wParam == IDC_REFRESH) {
        
-    }
 	
 	EXIT_CLASS_FUNCTION("NavigatorWindow");
     return 0;
+}
+
+int NavigatorWindow::page_onEraseBkGndPage(mWidget* self, HDC hdc, const RECT *rc)
+{
+	HDC hdct;
+	RECT rcClient;
+	DWORD bkColor;
+	gal_pixel old;
+
+	ENTER_CLASS_FUNCTION("NavigatorWindow");
+
+	if (hdc == (HDC)0)
+		hdct = GetClientDC(self->hwnd);
+	else
+		hdct =hdc;
+
+	GetClientRect(self->hwnd, &rcClient);
+	bkColor = GetWindowBkColor (self->hwnd);
+	old = SetBrushColor(hdct, bkColor);
+
+	logging_trace("rc->left=%d, rc->top=%d, rc->right=%d, rc->bottom=%d\r\n",  rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
+
+	FillBoxWithBitmap(hdct, rcClient.left, rcClient.top, RECTW(rcClient), RECTH(rcClient), m_navigatorBmp[BACKGROUD_BMP_INDEX]);
+	
+	SetBrushColor(hdct, old);
+	if(hdc != hdct)
+		ReleaseDC(hdct); 
+
+	EXIT_CLASS_FUNCTION("NavigatorWindow");
+
+	return 1;	
 }
 
 void NavigatorWindow::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
@@ -542,4 +572,17 @@ void NavigatorWindow::page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam)
         ::DestroyIcon(hIcon);
     
     EXIT_CLASS_FUNCTION("NavigatorWindow");
+}
+
+void NavigatorWindow::loadRes ()
+{
+	for (int i = 0; i < NAVIGATOR_BMP_MAX; ++i)
+		m_navigatorBmp[i] = (PBITMAP) LoadResource(navigator_img_path[i], RES_TYPE_IMAGE, (DWORD)HDC_SCREEN);
+}
+
+void NavigatorWindow::unloadRes ()
+{
+	for (int i = 0; i < NAVIGATOR_BMP_MAX; ++i)
+		ReleaseRes(Str2Key(navigator_img_path[i]));
+
 }

@@ -2,6 +2,7 @@
 #define _MAINWINDOW_H_
 
 #include "navigator_window.h"
+#include "infobarwindow.h"
 
 class MainWindow {
 public:
@@ -35,7 +36,8 @@ private:
     
 private:
     NavigatorWindow m_Navigator;
-    
+	InfoBarWindow m_InfoBarWindow;
+
     HWND m_hMainWnd;
     static MainWindow* m_pInstance;
     static NCS_EVENT_HANDLER m_mainHandlers[];
