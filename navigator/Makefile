@@ -26,8 +26,8 @@ objs : $(OBJS)
 rebuild: clean all
 
 clean :
-	@rm -fr *.o
-	@rm $(TARGET)
+	@rm -rf *.o
+	@rm -rf $(TARGET)
   
 $(TARGET) : $(OBJS)
 	$(AR) rsv $@ $(OBJS)

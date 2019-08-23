@@ -11,6 +11,7 @@ MainWindow* MainWindow::m_pInstance = NULL;
 NCS_EVENT_HANDLER MainWindow::m_mainHandlers [] = {
     {MSG_CREATE,        reinterpret_cast<void*>(MainWindow::main_onCreate)},
     {MSG_CLOSE,         reinterpret_cast<void*>(MainWindow::main_onClose)},
+	{MSG_USER_DEF_1,    reinterpret_cast<void*>(MainWindow::main_onUser)},
     {0, NULL}
 };
 
@@ -86,8 +87,8 @@ bool MainWindow::ncscreate()
         0,  // dwExStyle
         0,
         0,
-        800,
-        600);
+        SCREEN_W,
+        SCREEN_H);
 }
 
 void MainWindow::ncsshowWindow(){
@@ -114,6 +115,15 @@ void MainWindow::run()
     EXIT_CLASS_FUNCTION("MainWindow");
 
     return;
+}
+
+void MainWindow::main_onUser (mWidget* self, int message, WPARAM wParam, LPARAM lParam)
+{
+	ENTER_CLASS_FUNCTION("MainWindow");
+
+	EXIT_CLASS_FUNCTION("MainWindow");
+	
+	return;
 }
 
 BOOL MainWindow::main_onCreate(mWidget* self, DWORD dwAddData )

@@ -169,7 +169,7 @@ void InfoBarWindow::onCreate(HWND hWnd)
 					 "",
 					 /*WS_CHILD |*/ WS_VISIBLE | WS_EX_TRANSPARENT,
 					 IDC_TOOLBAR,
-					 rc.right - 200, 10 , 200, INFOBAR_H - 20,
+					 rc.right - 200, 0 , 200, INFOBAR_H,
 					 hWnd,
 					 0);
 	
@@ -187,8 +187,7 @@ void InfoBarWindow::onCreate(HWND hWnd)
 		 if (i == 3)
 			 SendMessage (m_hToolBar, CBM_ENABLE, i, FALSE);
 	 }
-
-	 
+ 
 	 EXIT_CLASS_FUNCTION(CUSTOM_CTRL_NAME);
 		
 }

@@ -2,7 +2,7 @@ C++ := g++
 AR  := ar
 
 MINIGUI_INCLUDE=-I/usr/local/include/minigui
-MINIGUI_LIB=-L/usr/local/lib -lminigui_ths -lmgncs
+MINIGUI_LIB=-L/usr/local/lib -lminigui_ths -lmgncs -lmgncs4touch -lmgeff  
 
 LIBNAVIGATOR=libnavigator.a
 NAVIGATOR_INCLUDE=-I./navigator
@@ -73,4 +73,4 @@ cscope:
 install:
 	sudo mv /usr/local/etc/mgncs.cfg /usr/local/etc/mgncs.cfg.bak
 	sudo cp ./etc/mgncs.cfg /usr/local/etc/
-	sudo cp ./res/cat.gif /usr/local/share/minigui/res/bmp/
+	sudo cp ./res/bkg.gif /usr/local/share/minigui/res/bmp/

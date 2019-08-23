@@ -15,9 +15,11 @@ GUI::~GUI()
 
 bool GUI::init()
 {
-    bool ret = false;
+	bool ret = false;
 
     ::ncsInitialize ();
+	::ncs4TouchInitialize ();
+	::mGEffInit ();
     ::InitNavigatorSkinRenderer();             
 
     //    ::SetDefaultWindowElementRenderer("skin");
@@ -51,7 +53,9 @@ void GUI::uninit()
         m_pMainWindow->release();
         m_pMainWindow = NULL;
 
-    	logging_trace("ncsUninitialize is invoked\r\n");       
+    	logging_trace("ncsUninitialize is invoked\r\n");
+		::mGEffDeinit ();
+ 		::ncs4TouchUninitialize ();		
     	::ncsUninitialize ();	
     }
 

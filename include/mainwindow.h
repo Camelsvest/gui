@@ -27,7 +27,7 @@ protected:
 
     static BOOL main_onCreate(mWidget* self, DWORD dwAddData );
     static BOOL main_onClose(mWidget* self, int message);
-
+	static void main_onUser (mWidget* self, int message, WPARAM wParam, LPARAM lParam);
 private:
     HMENU createMenu();
     HMENU createMenuFile();
