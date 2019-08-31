@@ -45,8 +45,6 @@ private:
 	static mPropSheet *m_propsheet;
 	static mPropSheet *m_propsheetTwo;
 	static NCS_EVENT_HANDLER m_pageHandlers[];
-	static NCS_EVENT_HANDLER m_pageHandlers_second[];
-	static NCS_EVENT_HANDLER m_pageHandlers_four[];
 
 	static const char* navigator_img_path[NAVIGATOR_BMP_MAX];
 	static PBITMAP m_navigatorBmp[NAVIGATOR_BMP_MAX];

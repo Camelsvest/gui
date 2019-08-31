@@ -503,22 +503,6 @@ NCS_EVENT_HANDLER NavigatorWindow::m_btnHandlers[] =
 	{0, NULL}
 };
 
-NCS_EVENT_HANDLER NavigatorWindow::m_pageHandlers_second[] =
-{
-	{MSG_INITPAGE,  reinterpret_cast<void*>(NavigatorWindow::page_onInitPage)},
-	{MSG_SHOWPAGE,  reinterpret_cast<void*>(NavigatorWindow::page_onShowPage)},
-	{MSG_SHEETCMD,  reinterpret_cast<void*>(NavigatorWindow::page_onSheetCmd)},
-	{MSG_ERASEBKGND, reinterpret_cast<void*>(NavigatorWindow::page_onEraseBkGndPage)},
-};
-
-NCS_EVENT_HANDLER NavigatorWindow::m_pageHandlers_four[] =
-{
-	{MSG_INITPAGE,  reinterpret_cast<void*>(NavigatorWindow::page_onInitPage)},
-	{MSG_SHOWPAGE,  reinterpret_cast<void*>(NavigatorWindow::page_onShowPage)},
-	{MSG_SHEETCMD,  reinterpret_cast<void*>(NavigatorWindow::page_onSheetCmd)},
-	{MSG_ERASEBKGND, reinterpret_cast<void*>(NavigatorWindow::page_onEraseBkGndPage)},
-};
-
 NavigatorWindow::NavigatorWindow()
     : m_navigator(NULL)
 {
@@ -747,7 +731,7 @@ void NavigatorWindow::onInitPage(mWidget* self,int pageType)
         	pageData->data = PAGE_FIRST;
 	    	PageSysInfoTemp.dwAddData = (DWORD)pageData;
 
-	    	_c(m_propsheet)->addPage(m_propsheet, &PageSysInfoTemp, m_pageHandlers_second);	
+	    	_c(m_propsheet)->addPage(m_propsheet, &PageSysInfoTemp, m_pageHandlers);	
 
 			PageSysInfoTemp.caption = "SNAPSHOTS";
         	pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -755,7 +739,7 @@ void NavigatorWindow::onInitPage(mWidget* self,int pageType)
         	pageData->data = PAGE_SECOND;
 	    	PageSysInfoTemp.dwAddData = (DWORD)pageData;
 
-	    	_c(m_propsheet)->addPage(m_propsheet, &PageSysInfoTemp, m_pageHandlers_second);	
+	    	_c(m_propsheet)->addPage(m_propsheet, &PageSysInfoTemp, m_pageHandlers);	
 			_c(m_propsheet)->setProperty(m_propsheet, NCSP_PRPSHT_TABMARGIN, 2);
 			break;
             
@@ -778,7 +762,7 @@ void NavigatorWindow::onInitPage(mWidget* self,int pageType)
         	pageData->data = PAGE_FIRST;
 	    	PageSysInfoTemp.dwAddData = (DWORD)pageData;
 
-	    	_c(m_propsheetTwo)->addPage(m_propsheetTwo, &PageSysInfoTemp, m_pageHandlers_four);	
+	    	_c(m_propsheetTwo)->addPage(m_propsheetTwo, &PageSysInfoTemp,  m_pageHandlers);	
 
 			PageSysInfoTemp.caption = "CALLLOG";
         	pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -786,7 +770,7 @@ void NavigatorWindow::onInitPage(mWidget* self,int pageType)
         	pageData->data = PAGE_SECOND;
 	    	PageSysInfoTemp.dwAddData = (DWORD)pageData;
 
-	    	_c(m_propsheetTwo)->addPage(m_propsheetTwo, &PageSysInfoTemp, m_pageHandlers_four);	
+	    	_c(m_propsheetTwo)->addPage(m_propsheetTwo, &PageSysInfoTemp,  m_pageHandlers);	
 		
 			PageSysInfoTemp.caption = "REQUESTS";
         	pageData = (mPageData *)malloc(sizeof(mPageData));
@@ -794,7 +778,7 @@ void NavigatorWindow::onInitPage(mWidget* self,int pageType)
         	pageData->data = PAGE_THIRD;
 	    	PageSysInfoTemp.dwAddData = (DWORD)pageData;
 
-	    	_c(m_propsheetTwo)->addPage(m_propsheetTwo, &PageSysInfoTemp, m_pageHandlers_four);
+	    	_c(m_propsheetTwo)->addPage(m_propsheetTwo, &PageSysInfoTemp,  m_pageHandlers/*m_pageHandlers_four*/);
 
 			_c(m_propsheetTwo)->setProperty(m_propsheetTwo, NCSP_PRPSHT_TABMARGIN, 2);
 	
