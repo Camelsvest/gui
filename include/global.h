@@ -45,6 +45,8 @@
 #define IDC_BUTTON_2 206
 #define IDC_BUTTON_3 207
 
+#define IDC_STATIC_0 208
+
 #define MSG_NVGT_BASEINDEX	(MSG_USER + 1000)
 #define MSG_INIT_SKIN  (MSG_NVGT_BASEINDEX + 1)   
 
@@ -61,4 +63,16 @@
 #define IDC_CONTAINER 502
 #define IDC_PROMPT 503
 #define IDC_PROPSHEET 504
+#define IDC_PROPSHEET_TWO 505
+
+#define NST_ID1	 506
+#define NST_ID2	 507
+#define NST_ID3	 508
+#define NST_ID4	 509
+#define NST_ID5	 510
+#define NST_ID6	 511
+#define NST_ID7	 512
+#define NST_ID8	 513
+#define NST_ID9	 514
+#define NST_ID10	 515
 #endif

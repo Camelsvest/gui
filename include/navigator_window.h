@@ -8,6 +8,7 @@
 #define BTN_W 140
 #define BTN_H 140
 #define NGT_TITLE_H 80
+#define NAVIGATOR_BMP_MAX 19
 
 class NavigatorWindow      {
 public:
@@ -15,22 +16,15 @@ public:
     virtual ~NavigatorWindow();
     
 	bool createWindow(HWND hMainWnd, RECT *rc);
-    
-	enum NAVIGATOR_BMP_INDEX {
-				AUDIODEMO_BMP_INDEX = 0,
-		        OPENGATE_BMP_INDEX,
-			    OPENDOOR_BMP_INDEX,
-				BACKGROUD_BMP_INDEX,
-					
-				NAVIGATOR_BMP_MAX = 7
-			};
+   	 
 	static NCS_EVENT_HANDLER m_btnHandlers[];
+	static NCS_EVENT_HANDLER m_panelHandlers[];
 protected:
     static void page_onInitPage(mWidget* self, DWORD add_data);
     static int page_onShowPage(mWidget* self, HWND hwnd, int show_cmd);
     static int page_onSheetCmd(mWidget* self, DWORD wParam, DWORD lParam);
     static void page_onDestroy(mWidget* self, DWORD wParam, DWORD lParam);
-
+	static int panel_onPaint(mWidget *self, HDC hdc, const CLIPRGN* inv);
 	static BOOL btn_Cb (mMainWnd *self, mButton *sender, int id, DWORD param);
 	static int btn_onDown (mWidget* self, DWORD wParam, DWORD lParam);
 	static int btn_onUp (mWidget* self, DWORD wParam, DWORD lParam);
@@ -39,6 +33,8 @@ protected:
 
 private:
     void onInitPage(mWidget* self, int pageType);
+	void onShowPage(mWidget* self, int pageType, int showCmd);
+	void onEraseBkGndPage(mWidget* self, HDC hdc, const RECT *rc, int type);
 	void loadRes ();
 	void unloadRes ();
 	bool registerAllPictures();
@@ -47,14 +43,15 @@ private:
 private:   
     mNavigator *m_navigator;
 	static mPropSheet *m_propsheet;
-
+	static mPropSheet *m_propsheetTwo;
 	static NCS_EVENT_HANDLER m_pageHandlers[];
 	static NCS_EVENT_HANDLER m_pageHandlers_second[];
+	static NCS_EVENT_HANDLER m_pageHandlers_four[];
 
-	static char* navigator_img_path[NAVIGATOR_BMP_MAX];
+	static const char* navigator_img_path[NAVIGATOR_BMP_MAX];
 	static PBITMAP m_navigatorBmp[NAVIGATOR_BMP_MAX];
 	static HWND m_hBtn[6];
-
+	
     typedef struct _mPageData
     {
         NavigatorWindow   *pThis;
